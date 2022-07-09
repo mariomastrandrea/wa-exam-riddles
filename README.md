@@ -1,5 +1,5 @@
-# Exam #12345: "Exam Title"
-## Student: s123456 LASTNAME FIRSTNAME 
+# Exam #2: "SolveMyRiddle"
+## Student: s302219 MASTRANDREA MARIO 
 
 ## React Client Application Routes
 
