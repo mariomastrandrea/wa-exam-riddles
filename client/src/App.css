@@ -1,38 +1,53 @@
-.App {
-  text-align: center;
+:root {
+   --icon-hover-color: #fe7;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* sidebar styles */
+
+aside .list-group-item {
+   padding: .75rem 1rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+aside .list-group-item.active {
+   background-color: #057;
+   border-color: unset;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+aside .list-group-item:hover {
+   background-color: #def;
 }
 
-.App-link {
-  color: #61dafb;
+aside .list-group-item.active:hover {
+   background-color: #068;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* cursor and hover on action icons */
+
+.action-icon, .action-icon-wrapper > * {
+   cursor: pointer;
 }
+
+.action-icon:hover, .action-icon-wrapper > *:hover {
+   fill: var(--icon-hover-color);
+   color: var(--icon-hover-color);
+}
+
+
+/* circular button */
+
+button.circular-button {
+   border-radius: 50rem;
+   padding: 0.6em 1.0em;
+}
+
+/* remove bootstrap blue color of <a> tag */
+
+a {
+   color: inherit
+}
+
+/* login form style */
+.login-form {
+   background-color: #fdfbf3;
+}
+
