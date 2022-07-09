@@ -58,9 +58,9 @@ function RiddlesNavbar(props) {
 
             <Navbar.Brand className="d-flex align-items-center action-icon-wrapper">
                <PatchQuestionFill color="white"  size="1.25em" className="me-2" title="go to homepage"
-                  onClick={activeFilter === 'all' ? () => undefined : () => goToHome()}/>
+                  onClick={activeFilter === 'All' ? () => undefined : () => goToHome()}/>
 
-               <span title="go to homepage" onClick={activeFilter === 'all' ? () => undefined : () => goToHome()}>
+               <span title="go to homepage" onClick={activeFilter === 'All' ? () => undefined : () => goToHome()}>
                   SolveMyRiddle
                </span>
             </Navbar.Brand>
