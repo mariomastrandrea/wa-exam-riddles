@@ -1,15 +1,46 @@
 const Joi = require('joi');
-const getRiddleDaoInstance = require("../dao/RiddleDao");
-const Riddle = require('../models/Riddle');
-const riddleDao = getRiddleDaoInstance();
+const dayjs = require('dayjs');
+
+const getRiddleServiceInstance = require("../services/RiddleService");
+const riddleService = getRiddleServiceInstance();
 
 // GET /riddles/filter/:filter
 async function getRiddlesByFilter(req, res) {
    try {
-      // TODO
+      const { filter } = req.params;
+      const filters = ['all', 'open', 'closed', 'owned'];
+
+      // filter must be one of the above 
+      if (Joi.string().allow(...filters).required().validate(filter).error) {
+         return res.status(400).json({
+            error: `Does not exist a '${filter}' filter`
+         });
+      }
+
+      const userIsAuthenticated = req.isAuthenticated();
+      const now = dayjs();    // time reference
+      let error, obj, code;
+
+      if (!userIsAuthenticated) {
+         ({ error, obj, code } = await riddleService.getRiddlesForNotAuthenticatedUser(filter, now));
+      }
+      else {
+         // *user is authenticated here*
+         const userId = req.user.id;
+         ({ error, obj, code } = await riddleService.getRiddlesForAuthenticatedUser(userId, filter, now));
+      }
+
+      if (error) {
+         return res.status(code).json({ error });
+      }
+
+      return res.status(code).json(obj);
    }
    catch (err) {
-
+      console.log(err);
+      return res.status(500).json({
+         error: "Generic error occurred during riddles loading"
+      });
    }
 }
 
@@ -38,29 +69,17 @@ async function createRiddle(req, res) {
       }
 
       const { question, answer, difficulty, duration, hint1, hint2 } = req.body;
-
-      // check if a riddle with the same question already exist
-      const riddle = await riddleDao.getRiddleByQuestion(question);
-
-      if (riddle) {
-         return res.status(409).json({
-            error: 'A riddle with the same question already exist'
-         });
-      }
-
-      // * create riddle *
       const ownerId = req.user.id;
-      const newRiddle = new Riddle(null, question, answer, difficulty, 
-                                    duration, hint1, hint2, ownerId, null);
 
-      const createdRiddle = await riddleDao.store(newRiddle);
+      const { error, code } = await riddleService.storeRiddle(question, answer,
+         difficulty, duration, hint1, hint2, ownerId);
 
-      if (!createdRiddle) {   
-         throw new TypeError('A generic error occurred during riddle storing');
+      if (error) {
+         return res.status(code).json({ error });
       }
 
       // * riddle was successfully created *
-      return res.status(201).end();
+      return res.status(code).end();
    }
    catch (err) {
       console.log(err);
@@ -69,6 +88,8 @@ async function createRiddle(req, res) {
       });
    }
 }
+
+
 
 module.exports = {
    getRiddlesByFilter,

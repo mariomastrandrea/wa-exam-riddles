@@ -40,8 +40,9 @@ function LoginForm(props) {
 
          // login was successful
          setUser(user);  // set user context
-         setSuccessMessage(`Welcome @${user.username}!`);
-         setTimeout(() => setSuccessMessage(""), 5000); // clear success message after 5 seconds
+         setSuccessMessage(`Welcome @${user.username}!\n
+            Now you can start playing replying to riddles, or you can create your own ones!`);
+         setTimeout(() => setSuccessMessage(""), 10000); // clear success message after 10 seconds
          navigate("/");
       }
       catch (err) {

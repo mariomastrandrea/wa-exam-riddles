@@ -55,7 +55,7 @@ passport.serializeUser(function (user, cb) {
    cb(null, user);
 });
 
-passport.deserializeUser(function (user, cb) { // this user is id + username
+passport.deserializeUser(function (user, cb) { // this user is id + username + score
    return cb(null, user);
 });
 

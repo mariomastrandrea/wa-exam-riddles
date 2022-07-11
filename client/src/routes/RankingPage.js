@@ -17,6 +17,8 @@ function RankingPage(props) {
    const setErrorMessage = useSetErrorMessage();
 
    useEffect(() => {
+      setErrorMessage("");
+
       getRankingList().then(rankingList => {
          setRankingList(rankingList);
          setLoadingRanking(false);

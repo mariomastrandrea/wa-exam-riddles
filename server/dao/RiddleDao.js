@@ -38,6 +38,47 @@ class RiddleDao {
       });
    }
 
+   // get all riddles, each with id, question and difficulty and deadline
+   getAllSimpleRiddles() {
+      return new Promise((resolve, reject) => {
+         const sqlQuery = `SELECT id, question, difficulty, deadline
+                           FROM Riddle`;
+         
+         this.#db.all(sqlQuery, (err, rows) => {
+            if(err) 
+               reject(err);
+            else
+               resolve(rows.map(row => ({
+                  id: row.id,
+                  question: row.question,
+                  difficulty: row.difficulty,
+                  deadline: row.deadline
+               })));
+         });
+      });
+   }
+
+   getAllRiddlesWithOwnerAndAnswer() {
+      return new Promise((resolve, reject) => {
+         const sqlQuery = `SELECT id, question, difficulty, deadline, answer, ownerId
+                           FROM Riddle`;
+         
+         this.#db.all(sqlQuery, (err, rows) => {
+            if(err) 
+               reject(err);
+            else
+               resolve(rows.map(row => ({
+                  id: row.id,
+                  question: row.question,
+                  difficulty: row.difficulty,
+                  deadline: row.deadline,
+                  answer: row.answer,
+                  ownerId: row.ownerId
+               })));
+         });
+      });
+   }
+
    store(newRiddle) {
       const newQuestion = newRiddle.question;
       const newAnswer = newRiddle.answer.toLowerCase();

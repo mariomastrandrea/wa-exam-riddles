@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
 import ErrorBox from '../components/utilities/ErrorBox';
-import { useErrorMessage } from '../context/ErrorMessageContext';
+import { useErrorMessage, useSetErrorMessage } from '../context/ErrorMessageContext';
 import LoginForm from '../components/LoginForm';
 import { useSetUser, useUser } from '../context/UserContext';
 
@@ -13,6 +13,7 @@ function LoginPage(props) {
 
    // context
    const errorMessage = useErrorMessage();
+   const setErrorMessage = useSetErrorMessage();
    const user = useUser();
    const setUser = useSetUser();
 
@@ -21,6 +22,8 @@ function LoginPage(props) {
 
    useEffect(() => {
       getCurrentSession().then(currentUser => {
+         setErrorMessage("");
+
          if (!currentUser) {
             console.clear();  // to clear the '401 unauthorized' error message
             // user is not authenticated or session expired

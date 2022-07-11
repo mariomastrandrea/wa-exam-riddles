@@ -15,7 +15,7 @@ const isLoggedIn = (req, res, next) => {
    return next();
 }
 
-router.get("/filter/:filter", isLoggedIn, getRiddlesByFilter);
+router.get("/filter/:filter", getRiddlesByFilter);
 router.post("/", isLoggedIn, createRiddle);
 
 

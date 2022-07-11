@@ -22,9 +22,10 @@ class UserDao {
 
    getUser(username, password) {
       return new Promise((resolve, reject) => {
-         const sqlQuery = `SELECT * 
-                           FROM User 
-                           WHERE username=?`;
+         const sqlQuery = `SELECT U.id AS id, U.username AS username, 
+                                  U.salt AS salt, U.hash AS hash, R.score AS score  
+                           FROM User U, Rank R
+                           WHERE username=? AND U.id=R.userId`;
 
          this.#db.get(sqlQuery, [username], (err, row) => {
             if (err) {
@@ -41,7 +42,8 @@ class UserDao {
             // username exists, now check password
             let user = {
                id: row.id, 
-               username: row.username
+               username: row.username,
+               score: row.score
             };
 
             crypto.scrypt(password, row.salt, 32, function (err, hashedPassword) {

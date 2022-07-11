@@ -8,6 +8,18 @@ html {
    font-size: 0.95rem;
 }
 
+/* navbar styles */
+
+.riddles-navbar .sign-in-button, .riddles-navbar .logout-button {
+   width: 5.5rem;
+}
+
+.riddles-navbar span.user-score {
+   font-size: 1rem;
+   font-weight: 600;
+   color:rgb(255, 226, 6);
+}
+
 /* sidebar styles */
 
 aside .list-group-item {
@@ -59,9 +71,7 @@ a {
 }
 
 .login-form {
-   border-color: grey; 
-   border-width: 0.5px; 
-   border-style: 'solid';
+   border: 0.5px solid grey; 
    border-radius: 8px; 
    padding: 1.4em 2.2em; 
    background-color: var(--login-form-color)

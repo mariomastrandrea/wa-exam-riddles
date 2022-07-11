@@ -11,7 +11,7 @@ function RiddleForm(props) {
       question: "",           // string
       answer: "",             // string
       difficulty: "average",  // string (easy, average, difficult)
-      duration: 30,           // number (seconds) from 30 to 600
+      duration: 90,           // number (seconds) from 30 to 600
       hint: ""                // string
    }
 

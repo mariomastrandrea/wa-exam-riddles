@@ -105,9 +105,10 @@ async function storeNewRiddle(newRiddle) {
 }
 
 // TODO: implement backend and check
-async function loadFilmsFilteredBy(filter) {
+async function loadRiddlesFilteredBy(filter) {
    try {
-      const response = await fetch(`${apiUrl}/riddles/filter/${filter}`, {
+      const response = await fetch(`${apiUrl}/riddles/filter/${filter.toLowerCase()}`, {
+         method: 'GET',
          credentials: 'include'
       });
 
@@ -155,6 +156,6 @@ export {
    logout,
    getCurrentSession,
    storeNewRiddle,
-   loadFilmsFilteredBy,
+   loadRiddlesFilteredBy,
    loadRankingList
 };

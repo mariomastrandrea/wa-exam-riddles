@@ -1,5 +1,5 @@
 import { Container, Navbar, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { PersonCircle, PatchQuestionFill } from 'react-bootstrap-icons';
+import { PersonCircle, PatchQuestionFill, Incognito } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import { useSetErrorMessage } from '../context/ErrorMessageContext';
 import { useSetSuccessMessage } from '../context/SuccessMessageContext';
@@ -53,7 +53,7 @@ function RiddlesNavbar(props) {
    }
 
    return (
-      <Navbar bg="primary" variant="dark" expand="md">
+      <Navbar bg="primary" variant="dark" expand="md" className="riddles-navbar">
          <Container fluid>
             <Navbar.Toggle />
 
@@ -92,18 +92,31 @@ function RiddlesNavbar(props) {
                      </Button>
                   </OverlayTrigger>
                </Navbar.Brand>
+               <Navbar.Brand>
+                  <OverlayTrigger placement="bottom" overlay={
+                     <Tooltip>{user ? "do the logout" : "go to sign in page"}</Tooltip>
+                  }>
+                     <Button className={`me-3 ${user ? 'sign-in' : 'logout'}-button`}
+                        onClick={() => user ? handleLogout() : goToLogin()}>
+                        {user ? "Logout" : "SignIn"}
+                     </Button>
+                  </OverlayTrigger>
+               </Navbar.Brand>
             </Navbar.Collapse>
 
             <Navbar.Brand>
-               <OverlayTrigger placement="bottom" overlay={
-                  <Tooltip>{user ? "do the logout" : "go to sign in page"}</Tooltip>
-               }>
-                  <Button className="me-2" onClick={() => user ? handleLogout() : goToLogin()}>
-                     {user ? "Logout" : "SignIn"}
-                  </Button>
-               </OverlayTrigger>
-
-               <PersonCircle color="white" size="1.6em" className="action-icon" />
+               {user ?
+                  <>
+                     <span className="user-score me-3">{user ? user.score : 0} points</span>
+                     <OverlayTrigger placement="bottom" overlay={
+                        <Tooltip>Hi {user.username}!</Tooltip>
+                     }>
+                        <PersonCircle color="white" size="1.6em" className="action-icon" />
+                     </OverlayTrigger>
+                  </> :
+                  <Incognito onClick={() => navigate("/login")}
+                     color="white" size="1.6em" className="action-icon" />
+               }
             </Navbar.Brand>
          </Container>
       </Navbar >

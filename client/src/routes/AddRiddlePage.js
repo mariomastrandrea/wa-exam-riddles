@@ -3,7 +3,7 @@ import { Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import RiddleForm from "../components/RiddleForm";
 import ErrorBox from "../components/utilities/ErrorBox";
-import { useErrorMessage } from "../context/ErrorMessageContext";
+import { useErrorMessage, useSetErrorMessage } from "../context/ErrorMessageContext";
 import { useSetUser, useUser } from "../context/UserContext";
 
 function AddRiddlePage(props) {
@@ -11,12 +11,15 @@ function AddRiddlePage(props) {
 
    // context
    const errorMessage = useErrorMessage();
-
-   const navigate = useNavigate();
+   const setErrorMessage = useSetErrorMessage();
    const user = useUser();
    const setUser = useSetUser();
 
+   const navigate = useNavigate();
+
    useEffect(() => {
+      setErrorMessage("");
+
       getCurrentSession().then(currentUser => {
          if (!currentUser) {
             console.clear();  // to clear the '401 unauthorized' error message
