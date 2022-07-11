@@ -55,6 +55,25 @@ class UserDao {
          });
       });
    }
+
+   getOrderedRankList() {
+      return new Promise((resolve, reject) => {
+         const sqlQuery = `SELECT U.username AS username, R.score AS score
+                           FROM Rank R, User U
+                           WHERE R.userId = U.id
+                           ORDER BY score DESC, username ASC`;
+
+         this.#db.all(sqlQuery, (err, rows) => {
+            if (err) 
+               reject(err)
+            else 
+               resolve(rows.map(row => ({
+                  username: row.username,
+                  score: row.score
+               })));
+         });               
+      });
+   }
 }
 
 // export only the factory method to get the singleton instance

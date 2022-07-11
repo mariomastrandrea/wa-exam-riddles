@@ -1,7 +1,7 @@
 :root {
    --icon-hover-color: #fe7;
-   --form-background-color: rgb(231, 240, 234);
-   --riddle-form-color: #fee9e3;
+   --login-form-color: rgb(231, 240, 234);
+   --riddle-form-color: #fecf95;
 }
 
 html {
@@ -54,6 +54,23 @@ a {
 
 /* login form styles */
 
+.login-form .card-body {
+   padding: 0;
+}
+
+.login-form {
+   border-color: grey; 
+   border-width: 0.5px; 
+   border-style: 'solid';
+   border-radius: 8px; 
+   padding: 1.4em 2.2em; 
+   background-color: var(--login-form-color)
+}
+
+.login-form div.line-separator > span {
+   background-color: var(--login-form-color);
+}
+
 .login-button > button {
    width: 100%;
    border-radius: 30rem;
@@ -72,7 +89,6 @@ div.line-separator {
 }
 
 div.line-separator > span {
-   background-color: var(--form-background-color);
    padding: 0 0.5em;
    position: relative;
    color: #6c7378;
@@ -81,12 +97,56 @@ div.line-separator > span {
 
 /* riddle form style */
 
+.riddle-form {
+   border-color: grey; 
+   border-width: 0.5px;
+   border-radius: 8px; 
+   padding: 1.4rem 2.2rem;
+   background-color: var(--riddle-form-color);
+}
+
+.riddle-form .card-body {
+   padding: 0;
+}
+
+.riddle-form textarea, .riddle-form select, .riddle-form input {
+   border-width: 1.5px;
+   background-color: #fffd;
+}
+
 .riddle-form button {
    border-radius: 50rem;
+   background-color: #fffa;
 }
 
 /* errors */
 .error-box p {
    margin: 0;
+}
+
+/* ranking table styles */
+
+main .table td, main .table th {
+   padding: 0.6rem 1.5rem;
+}
+
+#ranking-table tr:nth-child(1) td {
+   font-weight: bold;
+   background-color: #eee;
+}
+
+#ranking-table td:nth-child(1),
+#ranking-table th:nth-child(1) {
+   width: 20%;
+}
+
+#ranking-table td:nth-child(3),
+#ranking-table th:nth-child(3) {
+   width: 60%;
+}
+
+#ranking-table td:nth-child(3),
+#ranking-table th:nth-child(3) {
+   width: 20%;
 }
 

@@ -52,35 +52,35 @@ function LoginForm(props) {
    }
 
    return (
-      <Card style={{
-         borderColor: 'grey', borderWidth: 0.5, borderStyle: 'solid',
-         borderRadius: 8, padding: '1.4em 2.2em', backgroundColor: '#e7f0ea'
-      }}>
+      <Card className="login-form">
          <Card.Title as="h3" className="py-1">Sign In</Card.Title>
-         <Form onSubmit={handleSubmit}>
-            <FloatingLabel label="Username" controlId="floatingInput" className='my-3 form-field'>
-               <Form.Control type="text" value={username} required={true} placeholder="username"
-                  onChange={event => setUsername(event.target.value)} />
-            </FloatingLabel>
 
-            <FloatingLabel label="Password" controlId="floatingPassword" className='my-3 form-field'>
-               <Form.Control type="password" value={password} required={true} placeholder="password"
-                  onChange={event => setPassword(event.target.value)} />
-            </FloatingLabel>
+         <Card.Body>
+            <Form onSubmit={handleSubmit}>
+               <FloatingLabel label="Username" controlId="floatingInput" className='my-3 form-field'>
+                  <Form.Control type="text" value={username} required={true} placeholder="username"
+                     onChange={event => setUsername(event.target.value)} />
+               </FloatingLabel>
 
-            <Form.Group className='my-3 login-button' align="center">
-               <Button variant='success' type="submit" className="mt-3 py-2">
-                  Login
-               </Button>
-               <LineSeparator>
-                  or
-               </LineSeparator>
-               <Button variant='outline-secondary guest-button'
-                  onClick={() => navigate("/")} className="mt-1 py-2">
-                  Continue as guest
-               </Button>
-            </Form.Group>
-         </Form>
+               <FloatingLabel label="Password" controlId="floatingPassword" className='my-3 form-field'>
+                  <Form.Control type="password" value={password} required={true} placeholder="password"
+                     onChange={event => setPassword(event.target.value)} />
+               </FloatingLabel>
+
+               <Form.Group className='my-3 login-button' align="center">
+                  <Button variant='success' type="submit" className="mt-3 py-2">
+                     Login
+                  </Button>
+                  <LineSeparator>
+                     or
+                  </LineSeparator>
+                  <Button variant='outline-secondary guest-button'
+                     onClick={() => navigate("/")} className="mt-1 py-2">
+                     Continue as guest
+                  </Button>
+               </Form.Group>
+            </Form>
+         </Card.Body>
       </Card>
    );
 }

@@ -1,7 +1,6 @@
-import { Container, Form, Navbar, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Container, Navbar, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { PersonCircle, PatchQuestionFill } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '../API';
 import { useSetErrorMessage } from '../context/ErrorMessageContext';
 import { useSetSuccessMessage } from '../context/SuccessMessageContext';
 import { useUser, useSetUser } from '../context/UserContext';
@@ -9,7 +8,7 @@ import { useUser, useSetUser } from '../context/UserContext';
 
 // application navbar component
 function RiddlesNavbar(props) {
-   const { title, activeFilter } = props;
+   const { logout } = props;
 
    // context
    const user = useUser();
@@ -60,33 +59,54 @@ function RiddlesNavbar(props) {
 
             <Navbar.Brand className="d-flex align-items-center action-icon-wrapper">
                <PatchQuestionFill color="white" size="1.25em" className="me-2"
-                  onClick={activeFilter === 'All' ? () => undefined : () => goToHome()} />
+                  onClick={() => goToHome()} />
 
                <OverlayTrigger placement="bottom" overlay={
-                  <Tooltip>Go to the homepage</Tooltip>
+                  <Tooltip>Go to the <strong>homepage</strong></Tooltip>
                }>
-                  <span onClick={activeFilter === 'All' ? () => undefined : () => goToHome()}>
+                  <span onClick={() => goToHome()}>
                      SolveMyRiddle
                   </span>
                </OverlayTrigger>
             </Navbar.Brand>
 
-            <Navbar.Collapse className="flex-md-grow-0 mb-2 mt-3 my-md-0">
-               {title !== undefined ?
-                  <Navbar.Brand>{title}</Navbar.Brand> :
-                  <Form.Control id="search-box" type="text" placeholder="Search..." />
+            <Navbar.Collapse className="justify-content-end">
+               {user ?
+                  <OverlayTrigger placement="bottom" overlay={
+                     <Tooltip>Create your <strong>new</strong> Riddle!</Tooltip>
+                  }>
+                     <Navbar.Brand>
+                        <Button onClick={() => navigate("/addriddle")}>
+                           New Riddle
+                        </Button>
+                     </Navbar.Brand>
+                  </OverlayTrigger>
+                  : <></>
                }
+               <Navbar.Brand>
+                  <OverlayTrigger placement="bottom" overlay={
+                     <Tooltip>See the ranking list</Tooltip>
+                  }>
+                     <Button onClick={() => navigate("/ranking")}>
+                        Ranking
+                     </Button>
+                  </OverlayTrigger>
+               </Navbar.Brand>
             </Navbar.Collapse>
 
             <Navbar.Brand>
-               <Button onClick={() => user ? handleLogout() : goToLogin()}
-                  title={user ? "do the logout" : "go to login page"}>
-                  {user ? "Logout" : "SignIn"}
-               </Button>
-               <PersonCircle title="see user info" color="white" size="1.6em" className="action-icon" />
+               <OverlayTrigger placement="bottom" overlay={
+                  <Tooltip>{user ? "do the logout" : "go to sign in page"}</Tooltip>
+               }>
+                  <Button className="me-2" onClick={() => user ? handleLogout() : goToLogin()}>
+                     {user ? "Logout" : "SignIn"}
+                  </Button>
+               </OverlayTrigger>
+
+               <PersonCircle color="white" size="1.6em" className="action-icon" />
             </Navbar.Brand>
          </Container>
-      </Navbar>
+      </Navbar >
    );
 }
 

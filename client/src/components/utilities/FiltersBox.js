@@ -1,7 +1,7 @@
 import { ListGroup } from "react-bootstrap"
 import { useNavigate } from "react-router-dom";
-import { useSetErrorMessage } from "../context/ErrorMessageContext";
-import { useSetSuccessMessage } from "../context/SuccessMessageContext";
+import { useSetErrorMessage } from "../../context/ErrorMessageContext";
+import { useSetSuccessMessage } from "../../context/SuccessMessageContext";
 
 
 function FiltersBox(props) {

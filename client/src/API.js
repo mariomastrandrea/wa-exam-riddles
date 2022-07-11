@@ -1,9 +1,9 @@
-const apiUrl = "http://localhost:3001/api/";
+const apiUrl = "http://localhost:3001/api";
 
 /* user auth */
 async function login(credentials) {
    try {
-      const response = await fetch(`${apiUrl}login`, {
+      const response = await fetch(`${apiUrl}/login`, {
          method: 'POST', 
          headers: {
             'Content-Type': 'application/json'
@@ -31,7 +31,7 @@ async function login(credentials) {
 
 async function logout() {
    try {
-      const response = await fetch(`${apiUrl}logout`, {
+      const response = await fetch(`${apiUrl}/logout`, {
          method: 'DELETE',
          credentials: 'include'
       });
@@ -51,7 +51,7 @@ async function logout() {
 
 async function getCurrentSession() {
    try {
-      const response = await fetch(`${apiUrl}sessions/current`, {
+      const response = await fetch(`${apiUrl}/sessions/current`, {
          credentials: 'include'
       });
 
@@ -72,12 +72,82 @@ async function getCurrentSession() {
    }
 }
 
-async function storeNewRiddle() {
-   // TODO
+async function storeNewRiddle(newRiddle) {
+   try {
+      const response = await fetch(`${apiUrl}/riddles`, {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json'
+         },
+         credentials: 'include',
+         body: JSON.stringify(newRiddle)
+      });
+
+      if (response.status === 409) {
+         // already exist a riddle with the same question
+         return false;
+      }
+
+      if(!response.ok) {
+         // application error
+         const errDetails = await response.text();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
+      }
+
+      // new riddle added successfully
+      return true;
+   }
+   catch (err) {
+      // network connection error
+      console.log(err);
+      throw err;
+   }
 }
 
-async function getRiddlesFilteredBy() {
-   // TODO
+// TODO: implement backend and check
+async function loadFilmsFilteredBy(filter) {
+   try {
+      const response = await fetch(`${apiUrl}/riddles/filter/${filter}`, {
+         credentials: 'include'
+      });
+
+      if(!response.ok) {
+         // application error
+         const errDetails = await response.text();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
+      }
+
+      const filteredRiddles = await response.json();
+      return filteredRiddles; // ** TODO: modify riddles representation where needed **
+   }
+   catch (err) {
+      // network connection error
+      console.log(err);
+      throw err;
+   }
+}
+
+async function loadRankingList() {
+   try {
+      const response = await fetch(`${apiUrl}/rankinglist`, {
+         method: 'GET',
+         credentials: 'include'
+      });
+
+      if(!response.ok) {
+         // application error
+         const errDetails = await response.text();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
+      }
+
+      const rankingList = await response.json();
+      return rankingList;
+   }
+   catch (err) {
+      // network connection error
+      console.log(err);
+      throw err;
+   }
 }
 
 export {
@@ -85,5 +155,6 @@ export {
    logout,
    getCurrentSession,
    storeNewRiddle,
-   getRiddlesFilteredBy
+   loadFilmsFilteredBy,
+   loadRankingList
 };
