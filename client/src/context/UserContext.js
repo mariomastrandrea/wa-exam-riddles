@@ -1,14 +1,14 @@
 import React, { useState, useContext } from 'react';
 
 const UserContext = React.createContext();
-const UpdateUserContext = React.createContext();
+const SetUserContext = React.createContext();
 
 function useUser() {   // user context hook
    return useContext(UserContext);
 }
 
-function useUpdateUser() {  // setUser context hook
-   return useContext(UpdateUserContext);
+function useSetUser() {  // setUser context hook
+   return useContext(SetUserContext);
 }
 
 function UserProvider({children}) { // provider component
@@ -16,11 +16,11 @@ function UserProvider({children}) { // provider component
 
    return (
       <UserContext.Provider value={user}>
-         <UpdateUserContext.Provider value={setUser}>
+         <SetUserContext.Provider value={setUser}>
             {children}   
-         </UpdateUserContext.Provider>
+         </SetUserContext.Provider>
       </UserContext.Provider>
    );
 }
 
-export { UserProvider, useUser, useUpdateUser };
+export { UserProvider, useUser, useSetUser };

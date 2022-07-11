@@ -1,7 +1,13 @@
 
 function capitalize(string) {
-   if (typeof string !== "string" || string.length === 0)
+   if (typeof string !== "string")
       return null;
+   
+   if (string.length === 0) 
+      return string;
+   
+   if (string.length === 1)
+      return string.charAt(0).toUpperCase();
 
    return string.charAt(0).toUpperCase() + string.slice(1);
 }

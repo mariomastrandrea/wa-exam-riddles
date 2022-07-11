@@ -1,4 +1,4 @@
-import { Button, Col } from "react-bootstrap";
+import { Button, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 function AddButton(props) {
@@ -6,9 +6,15 @@ function AddButton(props) {
 
    return (
       <Col className="d-flex flex-row-reverse me-4 mt-3">
-         <Button onClick={() => navigate("/addriddle")} className="circular-button">
-            {props.children}
-         </Button>
+         <OverlayTrigger placement="top" overlay={
+            <Tooltip>
+               Create your <strong>new</strong> riddle!
+            </Tooltip>}>
+
+            <Button onClick={() => navigate("/addriddle")} className="circular-button">
+               {props.children}
+            </Button>
+         </OverlayTrigger>
       </Col>
    );
 }

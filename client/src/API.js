@@ -1,5 +1,6 @@
 const apiUrl = "http://localhost:3001/api/";
 
+/* user auth */
 async function login(credentials) {
    try {
       const response = await fetch(`${apiUrl}login`, {
@@ -71,8 +72,18 @@ async function getCurrentSession() {
    }
 }
 
+async function storeNewRiddle() {
+   // TODO
+}
+
+async function getRiddlesFilteredBy() {
+   // TODO
+}
+
 export {
    login,
    logout,
-   getCurrentSession
+   getCurrentSession,
+   storeNewRiddle,
+   getRiddlesFilteredBy
 };

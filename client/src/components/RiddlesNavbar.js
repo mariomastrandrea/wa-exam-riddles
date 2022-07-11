@@ -1,23 +1,25 @@
-import { Container, Form, Navbar, Button } from 'react-bootstrap';
+import { Container, Form, Navbar, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { PersonCircle, PatchQuestionFill } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../API';
-import { useUser, useUpdateUser } from '../UserContext';
+import { useSetErrorMessage } from '../context/ErrorMessageContext';
+import { useSetSuccessMessage } from '../context/SuccessMessageContext';
+import { useUser, useSetUser } from '../context/UserContext';
 
 
 // application navbar component
 function RiddlesNavbar(props) {
-   const { 
-      title, 
-      setErrorMessage, 
-      setSuccessMessage,
-      activeFilter
-   } = props;
+   const { title, activeFilter } = props;
+
+   // context
+   const user = useUser();
+   const setUser = useSetUser();
+   const setErrorMessage = useSetErrorMessage();
+   const setSuccessMessage = useSetSuccessMessage();
 
    const navigate = useNavigate();
-   const user = useUser(); 
-   const updateUser = useUpdateUser();
 
+   // callbacks
    function goToHome() {
       setErrorMessage("");
       setSuccessMessage("");
@@ -39,7 +41,7 @@ function RiddlesNavbar(props) {
          await logout();
 
          // logout successfully done
-         updateUser(undefined); // delete logged in user info from context
+         setUser(undefined); // delete logged in user info from context
          setSuccessMessage("You have successfully logged out");
          setTimeout(() => setSuccessMessage(""), 3000);  // make success message disappear after 3s
 
@@ -57,12 +59,16 @@ function RiddlesNavbar(props) {
             <Navbar.Toggle />
 
             <Navbar.Brand className="d-flex align-items-center action-icon-wrapper">
-               <PatchQuestionFill color="white"  size="1.25em" className="me-2" title="go to homepage"
-                  onClick={activeFilter === 'All' ? () => undefined : () => goToHome()}/>
+               <PatchQuestionFill color="white" size="1.25em" className="me-2"
+                  onClick={activeFilter === 'All' ? () => undefined : () => goToHome()} />
 
-               <span title="go to homepage" onClick={activeFilter === 'All' ? () => undefined : () => goToHome()}>
-                  SolveMyRiddle
-               </span>
+               <OverlayTrigger placement="bottom" overlay={
+                  <Tooltip>Go to the homepage</Tooltip>
+               }>
+                  <span onClick={activeFilter === 'All' ? () => undefined : () => goToHome()}>
+                     SolveMyRiddle
+                  </span>
+               </OverlayTrigger>
             </Navbar.Brand>
 
             <Navbar.Collapse className="flex-md-grow-0 mb-2 mt-3 my-md-0">
@@ -71,9 +77,9 @@ function RiddlesNavbar(props) {
                   <Form.Control id="search-box" type="text" placeholder="Search..." />
                }
             </Navbar.Collapse>
-            
+
             <Navbar.Brand>
-               <Button onClick={() => user ? handleLogout() : goToLogin()} 
+               <Button onClick={() => user ? handleLogout() : goToLogin()}
                   title={user ? "do the logout" : "go to login page"}>
                   {user ? "Logout" : "SignIn"}
                </Button>
@@ -82,7 +88,6 @@ function RiddlesNavbar(props) {
          </Container>
       </Navbar>
    );
-
 }
 
 export default RiddlesNavbar;

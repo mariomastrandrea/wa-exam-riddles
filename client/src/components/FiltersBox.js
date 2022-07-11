@@ -1,10 +1,16 @@
 import { ListGroup } from "react-bootstrap"
 import { useNavigate } from "react-router-dom";
-import { capitalize } from "../utilities";
+import { useSetErrorMessage } from "../context/ErrorMessageContext";
+import { useSetSuccessMessage } from "../context/SuccessMessageContext";
+
 
 function FiltersBox(props) {
+   // context
+   const setErrorMessage = useSetErrorMessage();
+   const setSuccessMessage = useSetSuccessMessage();
+
+   const { active, filters } = props;
    const navigate = useNavigate();
-   const { setErrorMessage, setSuccessMessage, active, className } = props;
 
    const handleChangeFilter = (key) => {
       setErrorMessage(""); 
@@ -12,19 +18,19 @@ function FiltersBox(props) {
       navigate(`/${key}`);
    };
 
-   const filtersElements = props.filters.map(name => {
-      const key = capitalize(name);
+   const filtersElements = filters.map(name => {
+      const key = name.toLowerCase();
 
       return (
-         <ListGroup.Item key={`${key}-filter`} active={active === key}
-            action={active !== name} onClick={() => handleChangeFilter(key.toLowerCase())}>
+         <ListGroup.Item key={`${key}-filter`} active={active === name}
+            action={active !== name} onClick={() => handleChangeFilter(key)}>
                {name}
          </ListGroup.Item>
       );
    });
 
    return (
-      <ListGroup className={className}>
+      <ListGroup>
          {filtersElements}
       </ListGroup>
    );

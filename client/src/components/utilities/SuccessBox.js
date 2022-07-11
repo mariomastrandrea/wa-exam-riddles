@@ -1,10 +1,16 @@
 import { Row, Col, Alert } from 'react-bootstrap';
 
-function SuccessBox({children}) {
+function SuccessBox({children, className}) {
+   let lines;
+
+   if (typeof children === "string") {
+      lines = children.split("\n").map((line, index) => <p key={`success-${index}`}>{line}</p>);
+   }
+
    return (
-      <Row className='mt-2 mx-2'>
-         <Col>
-            <Alert key='success' variant='success'>{children}</Alert>
+      <Row className='mt-2 mx-2 error-box'>
+         <Col className={className}>
+            <Alert variant='success'>{lines ? lines : children}</Alert>
          </Col>
       </Row>
    );

@@ -2,40 +2,44 @@ import { useParams } from "react-router";
 import { useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import RiddlesNavbar from "../components/RiddlesNavbar";
-import { getCurrentSession } from "../API"
 import { capitalize } from "../utilities";
 import ErrorBox from "../components/utilities/ErrorBox";
 import FiltersBox from "../components/FiltersBox";
 import SuccessBox from "../components/utilities/SuccessBox";
 import AddButton from "../components/AddButton";
+import { useErrorMessage } from "../context/ErrorMessageContext";
+import { useSuccessMessage } from "../context/SuccessMessageContext";
+import { useSetUser } from "../context/UserContext";
 
 
 // home page component
 function Home(props) {
+   const { filters, getCurrentSession } = props;
    const param = useParams();
-
-   const {
-      errorMessage, setErrorMessage,
-      successMessage, setSuccessMessage,
-      filters
-   } = props;
-
    const activeFilter = capitalize(props.activeFilter || param.activeFilter?.toLowerCase());
+
+   // context
+   const errorMessage = useErrorMessage();
+   //const setErrorMessage = useSetErrorMessage();
+   const successMessage = useSuccessMessage();
+   const setUser = useSetUser();
 
    useEffect(() => {
       getCurrentSession().then(user => {
          // **
          if (user) {
             console.log("success");
+            setUser(user);
          }
          else {
             console.log("error");
          }
+         // ** 
       });
-      // ** 
 
       // retrieve data
 
+      // eslint-disable-next-line
    }, [activeFilter]);
 
    let pageContent;
@@ -48,8 +52,7 @@ function Home(props) {
          <Row className='h-100'>
             {/* sidebar */}
             <Col as="aside" className="bg-light col-3 p-4 h-100">
-               <FiltersBox className="h-100" filters={filters} active={activeFilter} 
-                  setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
+               <FiltersBox filters={filters} active={activeFilter} />
             </Col>
 
             {/* main content */}
@@ -64,6 +67,8 @@ function Home(props) {
 
                   <Row as="main" className="px-4">
                      {
+
+                        //<CircularTimer maxSeconds={20} seconds={20} />
                         // riddles list component
                      }
                   </Row>
@@ -78,8 +83,7 @@ function Home(props) {
    return (
       <>
          <Row as="header">
-            <RiddlesNavbar activeFilter={activeFilter} title="Riddles list"
-               setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
+            <RiddlesNavbar activeFilter={activeFilter} title="Riddles list" />
          </Row>
          {pageContent}
       </>

@@ -1,5 +1,11 @@
 :root {
    --icon-hover-color: #fe7;
+   --form-background-color: rgb(231, 240, 234);
+   --riddle-form-color: #fee9e3;
+}
+
+html {
+   font-size: 0.95rem;
 }
 
 /* sidebar styles */
@@ -46,8 +52,41 @@ a {
    color: inherit
 }
 
-/* login form style */
-.login-form {
-   background-color: #fdfbf3;
+/* login form styles */
+
+.login-button > button {
+   width: 100%;
+   border-radius: 30rem;
+}
+
+form .form-field > .form-control {
+   font-size: 0.95em;
+}
+
+/* line separator */
+
+div.line-separator {
+   border-top: 1px solid #cbd2d6;
+   margin-top: 1.2rem;
+   height: 1.2rem;
+}
+
+div.line-separator > span {
+   background-color: var(--form-background-color);
+   padding: 0 0.5em;
+   position: relative;
+   color: #6c7378;
+   top: -0.7em;
+}
+
+/* riddle form style */
+
+.riddle-form button {
+   border-radius: 50rem;
+}
+
+/* errors */
+.error-box p {
+   margin: 0;
 }
 
