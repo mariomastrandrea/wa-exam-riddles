@@ -2,6 +2,7 @@ const apiUrl = "http://localhost:3001/api";
 const dayjs = require("dayjs");
 
 /* user auth */
+
 async function login(credentials) {
    try {
       const response = await fetch(`${apiUrl}/login`, {
@@ -73,6 +74,8 @@ async function getCurrentSession() {
    }
 }
 
+/* riddles APIs */
+
 async function storeNewRiddle(newRiddle) {
    try {
       const response = await fetch(`${apiUrl}/riddles`, {
@@ -105,7 +108,6 @@ async function storeNewRiddle(newRiddle) {
    }
 }
 
-// TODO: implement backend and check
 async function loadRiddlesFilteredBy(filter) {
    try {
       const response = await fetch(`${apiUrl}/riddles/filter/${filter}`, {
@@ -123,10 +125,11 @@ async function loadRiddlesFilteredBy(filter) {
 
       // ** modify riddles representation where needed **
 
-      // transform 'deadline' field into 'remaining seconds'
       const now = dayjs();
 
       for (let riddle of filteredRiddles) {
+
+         // transform 'deadline' attribute into 'remaining seconds'
          if (riddle.deadline) {  // open riddle, with timer already started
             const remainingSeconds = dayjs(riddle.deadline).diff(now, 'second');
 
@@ -138,9 +141,18 @@ async function loadRiddlesFilteredBy(filter) {
             delete riddle.deadline;
          }
 
+         // compute how much time has passed since the riddle was created
          if (riddle.birth) {
-            riddle.life = computeRiddleLife(now, riddle.birth);
+            riddle.life = computeTimePassedFrom(dayjs(riddle.birth), now);
             delete riddle.birth;
+         }
+
+         // compute how much time has passed since every reply (if any) was created
+         if (riddle.replies) {
+            for (let reply of riddle.replies) {
+               reply.life = computeTimePassedFrom(dayjs(reply.timestamp), now);
+               delete reply.timestamp;
+            }
          }
       }
 
@@ -176,30 +188,58 @@ async function loadRankingList() {
    }
 }
 
+async function postNewReply(riddleId, reply) {
+   try {
+      const response = await fetch(`${apiUrl}/riddles/replies`, {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json'
+         },
+         credentials: 'include',
+         body: JSON.stringify({ riddleId, reply })
+      });
+
+      if (!response.ok) {
+         // application error
+         const errDetails = await response.text();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
+      }
+
+      const replyOutcome = await response.json();
+      return replyOutcome.correct;  // true or false
+   }
+   catch (err) {
+      // network connection error
+      console.log(err);
+      throw err;
+   }
+}
+
 /* auxiliary functions */
 
-function computeRiddleLife(now, birth) {
-   const minutesPassed = now.diff(birth, 'minute');
+// 'startTimestamp' can be either a string or a dayjs object
+function computeTimePassedFrom(startTimestamp, now) {
+   const minutesPassed = now.diff(startTimestamp, 'minute');
 
    if (minutesPassed === 0) 
       return "now";
 
-   const hoursPassed = now.diff(birth, 'hour');
+   const hoursPassed = now.diff(startTimestamp, 'hour');
 
    if (hoursPassed === 0) 
       return `${minutesPassed} minute${minutesPassed > 1 ? 's' : ''}`;
 
-   const daysPassed = now.diff(birth, 'day');
+   const daysPassed = now.diff(startTimestamp, 'day');
 
    if (daysPassed === 0) 
       return `${hoursPassed} hour${hoursPassed > 1 ? 's' : ''}`;
 
-   const monthsPassed = now.diff(birth, 'month');
+   const monthsPassed = now.diff(startTimestamp, 'month');
 
    if (monthsPassed === 0) 
       return `${daysPassed} day${daysPassed > 1 ? 's' : ''}`;
 
-   const yearsPassed = now.diff(birth, 'year');
+   const yearsPassed = now.diff(startTimestamp, 'year');
 
    if (yearsPassed === 0) 
       return `${monthsPassed} month${monthsPassed > 1 ? 's' : ''}`;
@@ -213,5 +253,6 @@ export {
    getCurrentSession,
    storeNewRiddle,
    loadRiddlesFilteredBy,
-   loadRankingList
+   loadRankingList,
+   postNewReply
 };

@@ -1,5 +1,5 @@
 
-function Riddle(id, question, answer, difficulty, duration, hint1, hint2, ownerId, deadline, ownerUsername) {
+function Riddle(id, question, answer, difficulty, duration, hint1, hint2, ownerId, deadline, ownerUsername, birth) {
    this.id = id,                 // number
    this.question = question,
    this.answer = answer,
@@ -9,7 +9,8 @@ function Riddle(id, question, answer, difficulty, duration, hint1, hint2, ownerI
    this.hint2 = hint2,
    this.ownerId = ownerId,       // number
    this.deadline = deadline ? dayjs(deadline) : null,  // datetime object
-   this.ownerUsername = ownerUsername
+   this.ownerUsername = ownerUsername,
+   this.birth = birth;
 }
 
 module.exports = Riddle;

@@ -19,7 +19,7 @@ html {
    max-height: calc(78vh - var(--navbar-height));
 }
 
-/* riddle row styles */
+/* riddle row header styles */
 
 @media (min-width: 1400px) {
    .riddle-row .col-xxl-10.adjust {
@@ -45,7 +45,6 @@ html {
 }
 
 span.riddle-owner {
-   /*corsivo e grigio e più piccolo*/
    font-style: italic;
    color: grey;
    font-size: 0.75em;
@@ -69,6 +68,68 @@ span.riddle-question {
 span.open-close-pill , span.owned-pill {
    width: 3.75rem; 
    margin-right: 0.5rem;
+}
+
+/* riddle row body styles */
+
+.riddle-body-wrapper {
+   padding-left: 1.5rem;
+}
+
+.no-user--riddle-body, .no-replies-message {
+   font-size: 0.9em;
+   color: grey;
+   font-style: italic;
+}
+
+.riddle-reply-info {
+   padding-left: 1em;
+   font-size: 0.8em;
+   color: grey;
+}
+
+.riddle-reply-wrapper {
+   width: fit-content;
+   width: -moz-fit-content;
+   width: -webkit-fit-content;
+   padding: 0.15rem 1.25rem;
+   border-radius: 0.75rem;
+   font-style: italic;
+}
+
+.riddle-reply-wrapper.wrong {
+   background-color: rgb(254, 242, 242);
+}
+
+.riddle-reply-wrapper.correct {
+   background-color: rgb(220, 248, 230);
+   font-weight: 500;
+   font-size: 1.1em;
+}
+
+.riddle-reply-icon {
+   padding-right: 1.25em;
+   font-size: 0.85em;
+}
+
+.correct-answer-wrapper {
+   margin: 0 1rem 0.75rem;
+   font-style: italic;
+   font-size: 1.05em;
+}
+
+.correct-answer {
+   padding-left: 0.3em;
+   font-weight: 500;
+}
+
+.user-reply {
+   padding-left: 0.3em;
+}
+
+.user-reply-wrapper {
+   margin: 0 1rem 0.2rem;
+   font-style: italic;
 }
 
 /* riddle-row-pad styles */

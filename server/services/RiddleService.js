@@ -27,7 +27,7 @@ class RiddleService {
       return RiddleService.instance;
    }
 
-   storeRiddle = async (question, answer, difficulty, duration, hint1, hint2, ownerId, ownerUsername) => {
+   storeRiddle = async (question, answer, difficulty, duration, hint1, hint2, ownerId, ownerUsername, now) => {
       // check if a riddle with the same question already exist
       const riddle = await this.#dao.getRiddleByQuestion(question);
 
@@ -37,7 +37,7 @@ class RiddleService {
 
       // * create new riddle *
       const newRiddle = new Riddle(null, question, answer, difficulty,
-         duration, hint1, hint2, ownerId, null, ownerUsername);
+         duration, hint1, hint2, ownerId, null, ownerUsername, now);
 
       const createdRiddle = await this.#dao.store(newRiddle);
 
@@ -217,7 +217,7 @@ class RiddleService {
       // find (and add) user's reply (if any)
       const userReplyIndex =
          riddleRepliesWithUserIdAndCorrectness.findIndex(reply => reply.userId === userId);
-      const userReply = userReplyIndex > 0 ?
+      const userReply = userReplyIndex >= 0 ?
          riddleRepliesWithUserIdAndCorrectness[userReplyIndex].reply : undefined;
 
       if (userReply)
@@ -230,16 +230,12 @@ class RiddleService {
       if (winner)
          riddle.winner = winner;
 
-      // remove the user's reply from the list,
       // delete the 'userId' and 'correct' attributes from each reply and 
       // assign all those replies to the riddle
-      riddle.replies = riddleRepliesWithUserIdAndCorrectness.flatMap(reply => {
-         if (reply.userId === userId)
-            return [];  // remove user's reply
-
+      riddle.replies = riddleRepliesWithUserIdAndCorrectness.map(reply => {
          delete reply.userId;
          delete reply.correct;
-         return [reply];
+         return reply;
       });
    }
 }

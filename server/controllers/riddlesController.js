@@ -71,9 +71,10 @@ async function createRiddle(req, res) {
       const { question, answer, difficulty, duration, hint1, hint2 } = req.body;
       const ownerId = req.user.id;
       const ownerUsername = req.user.username;
+      const now = dayjs();    // time reference
 
       const { error, code } = await riddleService.storeRiddle(question, answer,
-         difficulty, duration, hint1, hint2, ownerId, ownerUsername);
+         difficulty, duration, hint1, hint2, ownerId, ownerUsername, now);
 
       if (error) {
          return res.status(code).json({ error });

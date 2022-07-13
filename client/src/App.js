@@ -3,7 +3,7 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import { Container, Row } from 'react-bootstrap'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { storeNewRiddle, login, logout, getCurrentSession, loadRankingList } from './API';
+import { storeNewRiddle, login, logout, getCurrentSession, loadRankingList, postNewReply } from './API';
 import { loadFilters } from './utilities';
 import { UserProvider } from './context/UserContext';
 import { ErrorMessageProvider } from './context/ErrorMessageContext';
@@ -38,6 +38,11 @@ function App() {
       return rankingList;
    }
 
+   async function sendReply(riddleId, reply) {
+      const isCorrect = await postNewReply(riddleId, reply);
+      return isCorrect;
+   }
+
    return (
       <Router>
          <UserProvider>  { /* provide user context */}
@@ -51,12 +56,12 @@ function App() {
                      <Routes>
                         <Route index element={
                            <Home filters={filters} activeFilter={"all"}
-                              getCurrentSession={getCurrentSession} />
+                              getCurrentSession={getCurrentSession} sendReply={sendReply} />
                         } />
 
                         <Route path="/:activeFilter" element={
                            <Home filters={filters}
-                              getCurrentSession={getCurrentSession} />
+                              getCurrentSession={getCurrentSession} sendReply={sendReply} />
                         } />
 
                         <Route path="/login" element={

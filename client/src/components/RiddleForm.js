@@ -62,12 +62,12 @@ function RiddleForm(props) {
       // *all input is ok here*
 
       const newRiddle = {
-         question,
-         answer,
+         question: question.trimEnd(),
+         answer: answer.trimEnd().toLowerCase(),
          difficulty,
          duration,
-         hint1,
-         hint2
+         hint1: hint1.trimEnd(),
+         hint2: hint2.trimEnd()
       };
 
       try {
@@ -119,7 +119,7 @@ function RiddleForm(props) {
                   <FloatingLabel label="Question" controlId="floatingQuestion">
                      <Form.Control as="textarea" value={question} required={true}
                         placeholder="Question" style={{ height: "5rem" }}
-                        onChange={event => setQuestion(event.target.value)} />
+                        onChange={event => setQuestion(event.target.value?.trimStart())} />
                   </FloatingLabel>
                </Form.Group>
 
@@ -127,7 +127,7 @@ function RiddleForm(props) {
                   <FloatingLabel label="Answer" controlId="floatingAnswer">
                      <Form.Control as="textarea" value={answer} required={true}
                         placeholder="Answer" style={{ height: "5rem" }}
-                        onChange={event => setAnswer(event.target.value)} />
+                        onChange={event => setAnswer(event.target.value?.trimStart())} />
                   </FloatingLabel>
                </Form.Group>
 
@@ -155,14 +155,14 @@ function RiddleForm(props) {
                <Form.Group className='my-3'>
                   <FloatingLabel label="Hint #1" controlId="floatingHint1">
                      <Form.Control type="text" value={hint1} required={true} placeholder="Hint #1"
-                        onChange={event => setHint1(event.target.value)} />
+                        onChange={event => setHint1(event.target.value?.trimStart())} />
                   </FloatingLabel>
                </Form.Group>
 
                <Form.Group className='my-3'>
                   <FloatingLabel label="Hint #2" controlId="floatingHint2">
                      <Form.Control type="text" value={hint2} required={true} placeholder="Hint #2"
-                        onChange={event => setHint2(event.target.value)} />
+                        onChange={event => setHint2(event.target.value?.trimStart())} />
                   </FloatingLabel>
                </Form.Group>
 

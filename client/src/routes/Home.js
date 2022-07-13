@@ -15,7 +15,7 @@ import { RiddlesList, RiddlePad } from "../components/RiddlesList";
 
 // home page component
 function Home(props) {
-   const { filters, getCurrentSession } = props;
+   const { filters, getCurrentSession, sendReply } = props;
    const param = useParams();
    const activeFilter = props.activeFilter || param.activeFilter?.toLowerCase();
 
@@ -29,7 +29,6 @@ function Home(props) {
    const setUser = useSetUser();
 
    useEffect(() => {
-
       // check if user is logged in
       getCurrentSession().then(user => {
          if (user) {
@@ -56,7 +55,6 @@ function Home(props) {
       const timerId = setInterval(() => {
          loadRiddlesFilteredBy(activeFilter).then(riddles => {
             setRiddles(riddles);
-            setErrorMessage("");
          })
          .catch(err => {
             setErrorMessage("An error occurred while loading riddles");
@@ -97,7 +95,7 @@ function Home(props) {
                   {!!riddles && riddles.length > 0 && <RiddlePad id="start" />}
                   <Row as="main" className="px-4 overflow-scroll">
                      {/* riddles list component */}
-                     <RiddlesList riddles={riddles} />
+                     <RiddlesList riddles={riddles} getCurrentSession={getCurrentSession} sendReply={sendReply} />
                   </Row>
                   {!!riddles && riddles.length > 0 && <RiddlePad id="end" />}
                </Row>
