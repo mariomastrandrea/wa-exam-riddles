@@ -109,7 +109,7 @@ function RiddlesNavbar(props) {
                   <>
                      <span className="user-score me-3">{user ? user.score : 0} points</span>
                      <OverlayTrigger placement="bottom" overlay={
-                        <Tooltip>Hi {user.username}!</Tooltip>
+                        <Tooltip>Hi @{user.username}!</Tooltip>
                      }>
                         <PersonCircle color="white" size="1.6em" className="action-icon" />
                      </OverlayTrigger>

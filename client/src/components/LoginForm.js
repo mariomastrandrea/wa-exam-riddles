@@ -11,8 +11,8 @@ function LoginForm(props) {
    const { login } = props;
 
    // state
-   const [username, setUsername] = useState("");
-   const [password, setPassword] = useState("");
+   const [username, setUsername] = useState("mariomastrandrea");
+   const [password, setPassword] = useState("password2");
 
    // context
    const setUser = useSetUser();
@@ -42,7 +42,7 @@ function LoginForm(props) {
          setUser(user);  // set user context
          setSuccessMessage(`Welcome @${user.username}!\n
             Now you can start playing replying to riddles, or you can create your own ones!`);
-         setTimeout(() => setSuccessMessage(""), 10000); // clear success message after 10 seconds
+         setTimeout(() => setSuccessMessage(""), 7000); // clear success message after 7 seconds
          navigate("/");
       }
       catch (err) {

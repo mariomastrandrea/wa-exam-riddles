@@ -38,11 +38,12 @@ class RiddleDao {
       });
    }
 
-   // get all riddles, each with id, question and difficulty and deadline
+   // get all riddles, each with id, question, difficulty and deadline, in descending order
    getAllSimpleRiddles() {
       return new Promise((resolve, reject) => {
          const sqlQuery = `SELECT id, question, difficulty, deadline
-                           FROM Riddle`;
+                           FROM   Riddle
+                           ORDER BY id DESC`;
          
          this.#db.all(sqlQuery, (err, rows) => {
             if(err) 
@@ -58,10 +59,12 @@ class RiddleDao {
       });
    }
 
-   getAllRiddlesWithOwnerAndAnswer() {
+   // get all riddles, each with id, question, difficulty, deadline, duration, answer, ownerId, ownerUsername and birth
+   getAllRiddles() {
       return new Promise((resolve, reject) => {
-         const sqlQuery = `SELECT id, question, difficulty, deadline, answer, ownerId
-                           FROM Riddle`;
+         const sqlQuery = `SELECT id, question, difficulty, deadline, duration, answer, ownerId, ownerUsername, birth
+                           FROM   Riddle
+                           ORDER BY id DESC`;
          
          this.#db.all(sqlQuery, (err, rows) => {
             if(err) 
@@ -72,8 +75,11 @@ class RiddleDao {
                   question: row.question,
                   difficulty: row.difficulty,
                   deadline: row.deadline,
+                  duration: row.duration,
                   answer: row.answer,
-                  ownerId: row.ownerId
+                  ownerId: row.ownerId,
+                  ownerUsername: row.ownerUsername,
+                  birth: row.birth
                })));
          });
       });
@@ -87,13 +93,14 @@ class RiddleDao {
       const newHint1 = newRiddle.hint1;
       const newHint2 = newRiddle.hint2;
       const newOwnerId = newRiddle.ownerId;
+      const newOwnerUsername = newRiddle.ownerId;
 
       return new Promise((resolve, reject) => {
          const sqlStatement = 
-            `INSERT INTO Riddle (question, answer, difficulty, duration, hint1, hint2, ownerId, deadline)
+            `INSERT INTO Riddle (question, answer, difficulty, duration, hint1, hint2, ownerId, deadline, ownerUsername)
              VALUES (?, ?, ?, ?, ?, ?, ?, NULL)`;
 
-         const params = [newQuestion, newAnswer, newDifficulty, newDuration, newHint1, newHint2, newOwnerId];   
+         const params = [newQuestion, newAnswer, newDifficulty, newDuration, newHint1, newHint2, newOwnerId, newOwnerUsername];   
 
          this.#db.run(sqlStatement, params, function(err) {
             if (err) 
@@ -103,6 +110,87 @@ class RiddleDao {
             else
                resolve(new Riddle(this.lastId, newQuestion, newAnswer, newDifficulty, 
                   newDuration, newHint1, newHint2, newOwnerId, null));
+         });
+      });
+   }
+
+   // replies are chronologically ordered; each one contains (username, reply)
+   getAllRepliesTo(riddleId) {   
+      return new Promise((resolve, reject) => {
+         const sqlQuery = `SELECT U.username AS username, R.reply AS reply
+                           FROM   RiddleReply R, User U
+                           WHERE  R.userId=U.Id AND R.riddleId=?
+                           ORDER  BY R.timestamp ASC`;
+
+         this.#db.all(sqlQuery, [riddleId], (err, rows) => {
+            if (err)
+               reject(err);
+            else
+               resolve(rows.map(row => ({
+                  username: row.username,
+                  reply: row.reply
+               })));
+         });
+      });
+   }
+
+   // replies are chronologically ordered; each one contains (username, reply, correct)
+   getAllRepliesWithCorrectnessTo(riddleId) {   
+      return new Promise((resolve, reject) => {
+         const sqlQuery = `SELECT U.username AS username, R.reply AS reply, R.correct AS correct
+                           FROM   RiddleReply R, User U
+                           WHERE  R.userId=U.Id AND R.riddleId=?
+                           ORDER  BY R.timestamp ASC`;
+
+         this.#db.all(sqlQuery, [riddleId], (err, rows) => {
+            if (err)
+               reject(err);
+            else
+               resolve(rows.map(row => ({
+                  username: row.username,
+                  reply: row.reply, 
+                  correct: !!row.correct  // 1 -> true, 0 -> false
+               })));
+         });
+      });
+   }
+
+   // replies are chronologically ordered; each one contains (userId, username, reply, correct)
+   getAllRepliesWithUserIdAndCorrectnessTo(riddleId) {   
+      return new Promise((resolve, reject) => {
+         const sqlQuery = `SELECT R.userId AS userId, U.username AS username, R.reply AS reply, R.correct AS correct
+                           FROM   RiddleReply R, User U
+                           WHERE  R.userId=U.Id AND R.riddleId=?
+                           ORDER  BY R.timestamp ASC`;
+
+         this.#db.all(sqlQuery, [riddleId], (err, rows) => {
+            if (err)
+               reject(err);
+            else
+               resolve(rows.map(row => ({
+                  userId: row.userId,
+                  username: row.username,
+                  reply: row.reply, 
+                  correct: !!row.correct  // 1 -> true, 0 -> false
+               })));
+         });
+      });
+   }
+
+   // returns only the string representing the user's reply to that riddle (if any)
+   getUserReplyTo(riddleId, userId) {
+      return new Promise((resolve, reject) => {
+         const sqlQuery = `SELECT reply
+                           FROM   RiddleReply
+                           WHERE  riddleId=? AND userId=?`;
+
+         this.#db.get(sqlQuery, [riddleId, userId], (err, row) => {
+            if (err)
+               reject(err);
+            else if (!row)
+               resolve(null);
+            else 
+               resolve(row.reply);
          });
       });
    }

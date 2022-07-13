@@ -1,10 +1,11 @@
 const apiUrl = "http://localhost:3001/api";
+const dayjs = require("dayjs");
 
 /* user auth */
 async function login(credentials) {
    try {
       const response = await fetch(`${apiUrl}/login`, {
-         method: 'POST', 
+         method: 'POST',
          headers: {
             'Content-Type': 'application/json'
          },
@@ -12,10 +13,10 @@ async function login(credentials) {
          credentials: 'include'
       });
 
-      if(response.status === 401)  
+      if (response.status === 401)
          return null;   // wrong username or password
-      
-      if(!response.ok) {
+
+      if (!response.ok) {
          const errDetails = await response.text();
          throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
       }
@@ -36,11 +37,11 @@ async function logout() {
          credentials: 'include'
       });
 
-      if(!response.ok) {
+      if (!response.ok) {
          const errDetails = await response.text();
          throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
       }
-      
+
       return true;
    }
    catch (err) {
@@ -55,10 +56,10 @@ async function getCurrentSession() {
          credentials: 'include'
       });
 
-      if(response.status === 401)   
+      if (response.status === 401)
          return null;   // no current session
-      
-      if(!response.ok) {
+
+      if (!response.ok) {
          const errDetails = await response.text();
          throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
       }
@@ -88,7 +89,7 @@ async function storeNewRiddle(newRiddle) {
          return false;
       }
 
-      if(!response.ok) {
+      if (!response.ok) {
          // application error
          const errDetails = await response.text();
          throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
@@ -107,19 +108,43 @@ async function storeNewRiddle(newRiddle) {
 // TODO: implement backend and check
 async function loadRiddlesFilteredBy(filter) {
    try {
-      const response = await fetch(`${apiUrl}/riddles/filter/${filter.toLowerCase()}`, {
+      const response = await fetch(`${apiUrl}/riddles/filter/${filter}`, {
          method: 'GET',
          credentials: 'include'
       });
 
-      if(!response.ok) {
+      if (!response.ok) {
          // application error
          const errDetails = await response.text();
          throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
       }
 
       const filteredRiddles = await response.json();
-      return filteredRiddles; // ** TODO: modify riddles representation where needed **
+
+      // ** modify riddles representation where needed **
+
+      // transform 'deadline' field into 'remaining seconds'
+      const now = dayjs();
+
+      for (let riddle of filteredRiddles) {
+         if (riddle.deadline) {  // open riddle, with timer already started
+            const remainingSeconds = dayjs(riddle.deadline).diff(now, 'second');
+
+            riddle.remainingSeconds = Math.max(remainingSeconds, 0);
+            delete riddle.deadline;
+         }
+         else if (riddle.deadline === null) {
+            riddle.remainingSeconds = riddle.duration; // riddle open but timer not started yet (no one has replied)
+            delete riddle.deadline;
+         }
+
+         if (riddle.birth) {
+            riddle.life = computeRiddleLife(now, riddle.birth);
+            delete riddle.birth;
+         }
+      }
+
+      return filteredRiddles;
    }
    catch (err) {
       // network connection error
@@ -135,7 +160,7 @@ async function loadRankingList() {
          credentials: 'include'
       });
 
-      if(!response.ok) {
+      if (!response.ok) {
          // application error
          const errDetails = await response.text();
          throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
@@ -149,6 +174,37 @@ async function loadRankingList() {
       console.log(err);
       throw err;
    }
+}
+
+/* auxiliary functions */
+
+function computeRiddleLife(now, birth) {
+   const minutesPassed = now.diff(birth, 'minute');
+
+   if (minutesPassed === 0) 
+      return "now";
+
+   const hoursPassed = now.diff(birth, 'hour');
+
+   if (hoursPassed === 0) 
+      return `${minutesPassed} minute${minutesPassed > 1 ? 's' : ''}`;
+
+   const daysPassed = now.diff(birth, 'day');
+
+   if (daysPassed === 0) 
+      return `${hoursPassed} hour${hoursPassed > 1 ? 's' : ''}`;
+
+   const monthsPassed = now.diff(birth, 'month');
+
+   if (monthsPassed === 0) 
+      return `${daysPassed} day${daysPassed > 1 ? 's' : ''}`;
+
+   const yearsPassed = now.diff(birth, 'year');
+
+   if (yearsPassed === 0) 
+      return `${monthsPassed} month${monthsPassed > 1 ? 's' : ''}`;
+
+   return `${yearsPassed} year${yearsPassed > 1 ? 's' : ''}`;
 }
 
 export {

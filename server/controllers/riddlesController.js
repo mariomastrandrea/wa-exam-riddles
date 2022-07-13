@@ -8,7 +8,7 @@ const riddleService = getRiddleServiceInstance();
 async function getRiddlesByFilter(req, res) {
    try {
       const { filter } = req.params;
-      const filters = ['all', 'open', 'closed', 'owned'];
+      const filters = ['all', 'open', 'closed', 'owned', 'not-owned'];
 
       // filter must be one of the above 
       if (Joi.string().allow(...filters).required().validate(filter).error) {
@@ -70,9 +70,10 @@ async function createRiddle(req, res) {
 
       const { question, answer, difficulty, duration, hint1, hint2 } = req.body;
       const ownerId = req.user.id;
+      const ownerUsername = req.user.username;
 
       const { error, code } = await riddleService.storeRiddle(question, answer,
-         difficulty, duration, hint1, hint2, ownerId);
+         difficulty, duration, hint1, hint2, ownerId, ownerUsername);
 
       if (error) {
          return res.status(code).json({ error });

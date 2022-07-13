@@ -1,46 +1,39 @@
-import { useEffect, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
+const MAX_NUM_OF_SECONDS = 99*60 + 59;
+
 function CircularTimer(props) {
-   const { maxSeconds, seconds } = props;
+   let { maxSeconds, remainingSeconds, closed, className } = props;
+   remainingSeconds = remainingSeconds > 0 ? remainingSeconds : 0;
 
-   const [remainingSeconds, setRemainingSeconds] = useState(seconds);
-   const percentage = remainingSeconds/maxSeconds * 100;
-   const closed = remainingSeconds === 0;
+   let percentage = remainingSeconds/maxSeconds * 100;
 
-   const ss = String(remainingSeconds % 60).padStart(2, '0');
-   const mm = String(Math.floor(remainingSeconds / 60));
+   if (percentage > 100)
+      percentage = 100;
 
-   useEffect(() => {
-      const intervalId = setInterval(() => {
-            
-         setRemainingSeconds(oldSeconds => {
-            if (oldSeconds === 0) 
-               clearInterval(intervalId);
-               
-            if (oldSeconds <= 0)
-               return 0;
+   let ss = String(remainingSeconds % 60).padStart(2, '0');
+   let mm = String(Math.floor(remainingSeconds / 60));
 
-            return oldSeconds - 1;
-         });
-      }, 1000); // 1s
-   }, []);
+   if (remainingSeconds > MAX_NUM_OF_SECONDS) {
+      ss = "99";
+      mm = "59";
+   }
 
    const circleStyles = {
       text: {
-         fill: `hsl(${percentage}, 100%, 30%)`, // Text color
+         fill: `hsl(${percentage ? percentage : 0}, 100%, 30%)`, // Text color
          fontSize: '22px', // Text size
       }, 
       path: {
          // Path color
-         stroke: `hsl(${percentage}, 100%, 30%)`
+         stroke: `hsl(${percentage ? percentage : 0}, 100%, 30%)`
       }
    };
 
    return (
-      <div style={{ width: 100, height: 100 }}>
-         <CircularProgressbar value={percentage} text={closed ? `closed` : `${mm}:${ss}`} 
+      <div style={{ width: 50, height: 50 }} className={className}>
+         <CircularProgressbar value={closed ? 0 : percentage} text={closed ? `closed` : `${mm}:${ss}`} 
             strokeWidth={12} styles={circleStyles} />
       </div>
    );

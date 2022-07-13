@@ -2,13 +2,117 @@
    --icon-hover-color: #fe7;
    --login-form-color: rgb(231, 240, 234);
    --riddle-form-color: #fecf95;
+   --navbar-height: 4rem;
 }
 
 html {
-   font-size: 0.95rem;
+   font-size: 1.05rem;
+}
+
+/* home page styles */
+
+.home-row {
+   height: calc(100vh - var(--navbar-height));
+}
+
+.home-row main {
+   max-height: calc(78vh - var(--navbar-height));
+}
+
+/* riddle row styles */
+
+@media (min-width: 1400px) {
+   .riddle-row .col-xxl-10.adjust {
+      width: 81.33333333%;
+   }
+
+   .riddle-row .col-xxl-1.adjust {
+      width: 10.33333333%
+   }
+}
+
+.riddle-row .accordion-button::after {
+   position: absolute;
+   right: 1.5rem;
+}
+
+.riddle-row .accordion-button:hover {
+   z-index: initial
+}
+
+.riddle-row .accordion-button {
+   min-height: 4.95rem;
+}
+
+span.riddle-owner {
+   /*corsivo e grigio e più piccolo*/
+   font-style: italic;
+   color: grey;
+   font-size: 0.75em;
+   margin-top: 0.15em;
+}
+
+span.difficulty-badge {
+   width: 4rem; 
+   margin-left: 0.5rem;
+}
+
+span.riddle-question {
+   font-size: 1.05em;
+} 
+
+.riddle-question-wrapper {
+   padding-left: 1rem;
+   padding-right: 1rem;
+}
+
+span.open-close-pill , span.owned-pill {
+   width: 3.75rem; 
+   margin-right: 0.5rem;
+}
+
+/* riddle-row-pad styles */
+
+.riddle-row-pad .accordion-button,
+.riddle-row-pad .accordion-button:not(.collapsed) {
+   background-color: rgba(255, 255, 255, 0.5);
+   box-shadow: none;
+   cursor: inherit;
+}
+
+.riddle-row-pad .accordion-button::after { 
+   background-image: none;
+}
+
+.riddle-row-pad {
+   position: absolute;
+   z-index: 1;
+}
+
+.riddle-row-pad, .riddle-row-pad * {
+   background-color: transparent;
+   border: none;
+}
+
+.riddle-row-pad.pad-start {
+   top: 0;
+   transform: translateY(-50%);
+}
+
+.riddle-row-pad.pad-end {
+   bottom: 0;
+   transform: translateY(50%);
+}
+
+.riddles-wrapper {
+   position: relative;
 }
 
 /* navbar styles */
+
+.riddles-navbar {
+   height: var(--navbar-height);
+} 
 
 .riddles-navbar .sign-in-button, .riddles-navbar .logout-button {
    width: 5.5rem;
@@ -56,6 +160,7 @@ aside .list-group-item.active:hover {
 button.circular-button {
    border-radius: 50rem;
    padding: 0.6em 1.0em;
+   z-index: 1;
 }
 
 /* remove bootstrap blue color of <a> tag */
@@ -130,7 +235,7 @@ div.line-separator > span {
 }
 
 /* errors */
-.error-box p {
+.error-box p, .success-box p {
    margin: 0;
 }
 
@@ -159,4 +264,6 @@ main .table td, main .table th {
 #ranking-table th:nth-child(3) {
    width: 20%;
 }
+
+
 

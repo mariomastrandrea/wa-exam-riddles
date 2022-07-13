@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
-import RankingTable from "../components/rankingTable/RankingTable";
-import ErrorBox from "../components/utilities/ErrorBox";
 import { useErrorMessage, useSetErrorMessage } from "../context/ErrorMessageContext";
+import ErrorBox from "../components/utilities/ErrorBox";
+import RankingTable from "../components/RankingTable";
 
 
 function RankingPage(props) {

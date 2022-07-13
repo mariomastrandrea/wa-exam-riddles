@@ -5,8 +5,8 @@ function RiddlesSidebar(props) {
    const { activeFilter, filters } = props;
 
    return (
-      <Col as="aside" className="bg-light col-3 p-4 h-100">
-         <FiltersBox filters={filters} active={activeFilter} />
+      <Col as="aside" className="bg-light col-3 p-4">
+         <FiltersBox filters={filters} activeFilter={activeFilter} />
       </Col>
    );
 }

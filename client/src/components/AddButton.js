@@ -5,7 +5,7 @@ function AddButton(props) {
    const navigate = useNavigate();
 
    return (
-      <Col className="d-flex flex-row-reverse me-4 mt-3">
+      <Col className="d-flex flex-row-reverse me-4">
          <OverlayTrigger placement="top" overlay={
             <Tooltip>
                Create your <strong>new</strong> riddle!

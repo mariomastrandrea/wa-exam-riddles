@@ -2,14 +2,17 @@ import { ListGroup } from "react-bootstrap"
 import { useNavigate } from "react-router-dom";
 import { useSetErrorMessage } from "../../context/ErrorMessageContext";
 import { useSetSuccessMessage } from "../../context/SuccessMessageContext";
+import { useUser } from "../../context/UserContext";
+import { convertToSnakeCase } from "../../utilities";
 
 
 function FiltersBox(props) {
    // context
    const setErrorMessage = useSetErrorMessage();
    const setSuccessMessage = useSetSuccessMessage();
+   const user = useUser();
 
-   const { active, filters } = props;
+   const { activeFilter, filters } = props;
    const navigate = useNavigate();
 
    const handleChangeFilter = (key) => {
@@ -19,11 +22,15 @@ function FiltersBox(props) {
    };
 
    const filtersElements = filters.map(name => {
-      const key = name.toLowerCase();
+      // 'Owned' and 'Not owned' filters are available only for authenticated users
+      if (!user && (name === 'Owned' || name === 'Not owned'))    
+         return null;
+
+      const key = convertToSnakeCase(name);
 
       return (
-         <ListGroup.Item key={`${key}-filter`} active={active === name}
-            action={active !== name} onClick={() => handleChangeFilter(key)}>
+         <ListGroup.Item key={`${key}-filter`} active={activeFilter === key}
+            action={activeFilter !== key} onClick={() => handleChangeFilter(key)}>
                {name}
          </ListGroup.Item>
       );

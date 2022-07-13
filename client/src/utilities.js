@@ -1,4 +1,12 @@
 
+function convertToSnakeCase(string) {
+   return string.toLowerCase().split(" ").filter(x => x.length > 0).join("-");
+}
+
+function revertFromSnakeCase(string) {
+   return string.charAt(0).toUpperCase() + string.split("-").join(" ").slice(1);
+}
+
 function capitalize(string) {
    if (typeof string !== "string")
       return null;
@@ -17,11 +25,12 @@ function loadFilters() {
       "All",
       "Open",
       "Closed",
-      "Owned"
+      "Owned",
+      "Not owned"
    ];
 
    return filters;
 }
 
-export { capitalize, loadFilters };
+export { convertToSnakeCase, revertFromSnakeCase, capitalize, loadFilters };
 

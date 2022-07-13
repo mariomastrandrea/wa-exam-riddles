@@ -8,7 +8,7 @@ function ErrorBox({children, className}) {
    }
 
    return (
-      <Row className='mt-2 mx-2 error-box'>
+      <Row className='mt-1 mb-3 pe-5 ps-3 error-box'>
          <Col className={className}>
             <Alert variant='danger'>{lines ? lines : children}</Alert>
          </Col>

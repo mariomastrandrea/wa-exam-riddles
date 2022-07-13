@@ -3,6 +3,7 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import { Container, Row } from 'react-bootstrap'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { storeNewRiddle, login, logout, getCurrentSession, loadRankingList } from './API';
 import { loadFilters } from './utilities';
 import { UserProvider } from './context/UserContext';
 import { ErrorMessageProvider } from './context/ErrorMessageContext';
@@ -10,9 +11,8 @@ import { SuccessMessageProvider } from './context/SuccessMessageContext';
 import Home from './routes/Home';
 import LoginPage from './routes/LoginPage'
 import AddRiddlePage from './routes/AddRiddlePage';
-import { storeNewRiddle, login, logout, getCurrentSession, loadRankingList } from './API';
-import RiddlesNavbar from './components/RiddlesNavbar';
 import RankingPage from './routes/RankingPage';
+import RiddlesNavbar from './components/RiddlesNavbar';
 
 
 function App() {
@@ -50,7 +50,7 @@ function App() {
 
                      <Routes>
                         <Route index element={
-                           <Home filters={filters} activeFilter={"All"}
+                           <Home filters={filters} activeFilter={"all"}
                               getCurrentSession={getCurrentSession} />
                         } />
 
