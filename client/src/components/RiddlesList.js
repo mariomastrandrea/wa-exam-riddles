@@ -260,8 +260,8 @@ function NotOwnedRiddleBody(props) {
          else if (difficulty === 'average') points = 2;
          else if (difficulty === 'difficult') points = 3;
 
-         setSuccessMessage(`Hooray! Your reply was correct, you got ${points} points! ${String.fromCharCode(0xD83E, 0xDD73)} ${String.fromCharCode(0xD83C, 0xDF89)}`);
-         setTimeout(() => setSuccessMessage(""), 5000); // disappear after 3 sec
+         setSuccessMessage(`Hooray! Your reply was correct, you got ${points} point${points === 1 ? '' : 's'}! ${String.fromCharCode(0xD83E, 0xDD73)} ${String.fromCharCode(0xD83C, 0xDF89)}`);
+         setTimeout(() => setSuccessMessage(""), 8000); // disappear after 8 sec
 
          // - update user's score calling the API
 

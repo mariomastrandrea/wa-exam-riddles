@@ -110,7 +110,7 @@ function Home(props) {
                   {!!riddles && riddles.length > 0 && <RiddlePad id="end" />}
                </Row>
 
-               {!errorMessage && !successMessage &&
+               {!errorMessage && !successMessage && user &&
                   <Row className="m-3">
                      <AddButton>+</AddButton>
                   </Row>}
