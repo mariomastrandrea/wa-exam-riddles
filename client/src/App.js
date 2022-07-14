@@ -3,7 +3,7 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import { Container, Row } from 'react-bootstrap'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { storeNewRiddle, login, logout, getCurrentSession, loadRankingList, postNewReply } from './API';
+import { storeNewRiddle, login, logout, getCurrentSession, loadRankingList, postNewReply, getHint } from './API';
 import { loadFilters } from './utilities';
 import { UserProvider } from './context/UserContext';
 import { ErrorMessageProvider } from './context/ErrorMessageContext';
@@ -55,13 +55,13 @@ function App() {
 
                      <Routes>
                         <Route index element={
-                           <Home filters={filters} activeFilter={"all"}
-                              getCurrentSession={getCurrentSession} sendReply={sendReply} />
+                           <Home filters={filters} activeFilter={"all"} getCurrentSession={getCurrentSession} 
+                              sendReply={sendReply} getHint={getHint} />
                         } />
 
                         <Route path="/:activeFilter" element={
-                           <Home filters={filters}
-                              getCurrentSession={getCurrentSession} sendReply={sendReply} />
+                           <Home filters={filters} getCurrentSession={getCurrentSession} 
+                              sendReply={sendReply} getHint={getHint} />
                         } />
 
                         <Route path="/login" element={

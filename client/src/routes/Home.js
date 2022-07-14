@@ -5,7 +5,7 @@ import { loadRiddlesFilteredBy } from "../API";
 import { revertFromSnakeCase } from "../utilities";
 import { useErrorMessage, useSetErrorMessage } from "../context/ErrorMessageContext";
 import { useSuccessMessage } from "../context/SuccessMessageContext";
-import { useSetUser } from "../context/UserContext";
+import { useSetUser, useUser } from "../context/UserContext";
 import ErrorBox from "../components/utilities/ErrorBox";
 import SuccessBox from "../components/utilities/SuccessBox";
 import AddButton from "../components/AddButton";
@@ -15,7 +15,7 @@ import { RiddlesList, RiddlePad } from "../components/RiddlesList";
 
 // home page component
 function Home(props) {
-   const { filters, getCurrentSession, sendReply } = props;
+   const { filters, getCurrentSession, sendReply, getHint } = props;
    const param = useParams();
    const activeFilter = props.activeFilter || param.activeFilter?.toLowerCase();
 
@@ -26,6 +26,7 @@ function Home(props) {
    const errorMessage = useErrorMessage();
    const setErrorMessage = useSetErrorMessage();
    const successMessage = useSuccessMessage();
+   const user = useUser();
    const setUser = useSetUser();
 
    useEffect(() => {
@@ -53,7 +54,6 @@ function Home(props) {
 
       // * start the timer to retrieve riddles from backend every 1 sec *
       const timerId = setInterval(() => {
-         return;
          loadRiddlesFilteredBy(activeFilter).then(riddles => {
             setRiddles(riddles);
          })
@@ -73,7 +73,8 @@ function Home(props) {
    }
 
    // check if the specified filter exist, otherwise return a blank page
-   if (!filters.some(filter => filter === revertFromSnakeCase(activeFilter))) {
+   if (!filters.some(filter => filter === revertFromSnakeCase(activeFilter))
+   || (!user && (activeFilter === 'owned' || activeFilter === 'not-owned'))) {
       return <ErrorBox>{"Error: please specify an existing filter"}</ErrorBox>;
    }
 
@@ -96,7 +97,7 @@ function Home(props) {
                   {!!riddles && riddles.length > 0 && <RiddlePad id="start" />}
                   <Row as="main" className="px-4 overflow-scroll">
                      {/* riddles list component */}
-                     <RiddlesList riddles={riddles} sendReply={sendReply} />
+                     <RiddlesList riddles={riddles} sendReply={sendReply} getHint={getHint} />
                   </Row>
                   {!!riddles && riddles.length > 0 && <RiddlePad id="end" />}
                </Row>

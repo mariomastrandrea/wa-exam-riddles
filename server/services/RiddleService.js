@@ -14,6 +14,8 @@ const {
    BAD_REQUEST
 } = require("../statusCodes");
 
+const { int } = require("../utilities");
+
 
 class RiddleService {
    #dao;
@@ -166,6 +168,53 @@ class RiddleService {
       }
 
       throw new TypeError("unexpected filter in getRiddlesForAuthenticatedUser()");
+   }
+
+   getHint = async (riddleId, hintNum) => {
+      // check if riddle exists
+      const riddle = await this.#dao.getRiddleById(riddleId);
+
+      if(!riddle) {
+         return NOT_FOUND(`Does not exist riddle with id=${riddleId}`);
+      }
+
+      const now = dayjs();
+
+      // check if no one has still replied to the riddle yet
+      if (!riddle.deadline) {
+         return BAD_REQUEST('No one has replied to the riddle yet');
+      }
+
+      // check if riddle is already closed
+      if (now.isAfter(dayjs(riddle.deadline))) {
+         return BAD_REQUEST(`Riddle with id=${riddleId} is already closed`);
+      }
+
+      // check the remaining time, compared to the requested hint
+      let secondsThreshold;
+      hintNum = int(hintNum);
+
+      if (hintNum === 1) {
+         secondsThreshold = Math.ceil((riddle.duration * 0.5));
+      }
+      else if (hintNum === 2) {
+         secondsThreshold = Math.ceil((riddle.duration * 0.25));
+      }
+
+      const remainingSeconds = dayjs(riddle.deadline).diff(now, 'second');
+
+      if (remainingSeconds > secondsThreshold) { 
+         return BAD_REQUEST(`You have to wait ${remainingSeconds - secondsThreshold} seconds before requesting the hint #${hintNum}`);
+      }
+
+      // * hint can be shown here *
+      const hint = await this.#dao.getHint(riddleId, hintNum);
+
+      if (!hint) {
+         return INTERNAL_SERVER_ERROR("A general error occurred retrieving the hint");
+      }
+
+      return OK({ hint });
    }
 
    storeReply = async (riddleId, userId, reply) => {

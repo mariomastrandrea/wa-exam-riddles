@@ -165,6 +165,29 @@ async function loadRiddlesFilteredBy(filter) {
    }
 }
 
+async function getHint(riddleId, hintNum) {
+   try {
+      const response = await fetch(`${apiUrl}/riddles/${riddleId}/hint/${hintNum}`, {
+         method: 'GET',
+         credentials: 'include'
+      });
+
+      if (!response.ok) {
+         // application error
+         const errDetails = await response.json();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails.error}`);
+      }
+
+      const hintObj = await response.json();
+      return hintObj.hint;
+   }
+   catch (err) {
+      // network connection error
+      console.log(err);
+      throw err;
+   }
+}
+
 async function loadRankingList() {
    try {
       const response = await fetch(`${apiUrl}/rankinglist`, {
@@ -253,6 +276,7 @@ export {
    getCurrentSession,
    storeNewRiddle,
    loadRiddlesFilteredBy,
+   getHint,
    loadRankingList,
    postNewReply
 };

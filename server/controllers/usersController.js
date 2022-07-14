@@ -66,6 +66,10 @@ async function getRankingList(req, res) {
    }
 }
 
+async function getUserScore(req, res) {
+   
+}
+
 module.exports = {
    getCurrentSession,
    login,

@@ -26,6 +26,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 // add cors middleware
+
 app.use(cors({
    origin: 'http://localhost:3000',    // address of the frontend app server 
    optionsSuccessStatus: 200,

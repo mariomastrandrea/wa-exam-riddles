@@ -58,6 +58,40 @@ class RiddleDao {
       });
    }
 
+   getHint(riddleId, hintNum) {
+      return new Promise((resolve, reject) => {
+         let sqlQuery;
+
+         if (hintNum === 1) {
+            sqlQuery = `SELECT hint1
+                        FROM   Riddle
+                        WHERE  id=?`;
+         }
+         else if (hintNum === 2) {
+            sqlQuery = `SELECT hint2
+                        FROM   Riddle
+                        WHERE  id=?`;
+         }
+         else {
+            resolve(null);
+            return;
+         }
+
+         this.#db.get(sqlQuery, [riddleId], (err, row) => {
+            if (err)
+               reject(err);
+            else if (!row)
+               resolve(null);
+            else if (hintNum === 1)
+               resolve(row.hint1);
+            else if(hintNum === 2)
+               resolve(row.hint2);
+            else
+               resolve(null); 
+         });
+      });
+   }
+
    // get all riddles, each with id, question, difficulty and deadline, in descending order
    getAllSimpleRiddles() {
       return new Promise((resolve, reject) => {

@@ -4,7 +4,7 @@ import 'react-circular-progressbar/dist/styles.css';
 const MAX_NUM_OF_SECONDS = 99*60 + 59;
 
 function CircularTimer(props) {
-   let { maxSeconds, remainingSeconds, closed, className } = props;
+   let { maxSeconds, remainingSeconds, closed, className, size } = props;
    remainingSeconds = remainingSeconds > 0 ? remainingSeconds : 0;
 
    let percentage = remainingSeconds/maxSeconds * 100;
@@ -32,7 +32,7 @@ function CircularTimer(props) {
    };
 
    return (
-      <div style={{ width: 50, height: 50 }} className={className}>
+      <div style={{ width: size, height: size }} className={className}>
          <CircularProgressbar value={closed ? 0 : percentage} text={closed ? `closed` : `${mm}:${ss}`} 
             strokeWidth={12} styles={circleStyles} />
       </div>

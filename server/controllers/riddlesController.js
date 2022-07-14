@@ -44,6 +44,41 @@ async function getRiddlesByFilter(req, res) {
    }
 }
 
+// GET /riddles/:riddleId/hint/:hintNum
+async function getHint(req, res) {
+   try {
+      // validate URL parameters
+      const { riddleId, hintNum } = req.params;
+
+      if (Joi.number().integer().required().validate(riddleId).error) {
+         return res.status(422).json({
+            error: "Invalid riddle id - it must be an integer number"
+         });
+      }
+      
+      if (Joi.number().integer().min(1).max(2).required().validate(hintNum).error) {
+         return res.status(422).json({
+            error: "Invalid hint number - hint must be between 1 and 2"
+         });
+      }
+      // * validation ok here *
+      
+      const { error, code, obj } = await riddleService.getHint(riddleId, hintNum);
+
+      if (error) {
+         return res.status(code).json({ error });
+      }
+
+      return res.status(code).json(obj);
+   }
+   catch (error) {
+      console.log(error);
+      return res.status(500).json({
+         error: "A generic error occurred during hint loading"
+      });
+   }
+}
+
 // POST /riddles
 // request body: a json containing 'question'(string), 'answer'(string), 
 // 'difficulty'(string between 'easy', 'average' and 'difficult'), 
@@ -131,6 +166,7 @@ async function createReply(req, res) {
 
 module.exports = {
    getRiddlesByFilter,
+   getHint,
    createRiddle,
    createReply
 }

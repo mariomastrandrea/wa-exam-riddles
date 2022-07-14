@@ -5,12 +5,14 @@ const {
    login,
    logout,
    getCurrentSession,
-   getRankingList
+   getRankingList,
+   getUserScore
 } = require("../controllers/usersController");
 
 
 router.get('/sessions/current', getCurrentSession);
 router.get("/rankinglist", getRankingList);
+router.get("rankinglist/:userId", getUserScore);
 router.post("/login", login);
 router.delete("/logout", logout);
 

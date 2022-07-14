@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Accordion, Button, Col, Container, Form, Row, Stack } from "react-bootstrap";
 import { useSetErrorMessage } from "../context/ErrorMessageContext";
 import { useSetSuccessMessage } from "../context/SuccessMessageContext";
@@ -11,7 +11,7 @@ import OwnedPill from "./utilities/OwnedPill";
 
 
 function RiddlesList(props) {
-   const { riddles, sendReply } = props;
+   const { riddles, sendReply, getHint } = props;
 
    if (!riddles || riddles.length === 0) {
       return <></>;
@@ -20,23 +20,58 @@ function RiddlesList(props) {
    return (
       <Container fluid>
          {riddles.map(riddle =>
-            <RiddleRow key={`riddle-${riddle.id}-row`} riddle={riddle} sendReply={sendReply} />)}
+            <RiddleRow key={`riddle-${riddle.id}-row`} riddle={riddle}
+               sendReply={sendReply} getHint={getHint} />)}
       </Container>
    );
 }
 
 function RiddleRow(props) {
-   const { riddle, sendReply } = props;
+   const { riddle, sendReply, getHint } = props;
 
    // context
    const user = useUser();
+   const setErrorMessage = useSetErrorMessage();
 
+   // computed values
    const repliedCorrectly = user && riddle.winner === user.username;
-   const repliedWrong     = user && riddle.userReply && riddle.winner !== user.username;
+   const repliedWrong = user && riddle.userReply && riddle.winner !== user.username;
+   const showHint1 = user && !riddle.owned && (riddle.remainingSeconds <= Math.floor(0.5 * riddle.duration));
+   const showHint2 = user && !riddle.owned && (riddle.remainingSeconds <= Math.floor(0.25 * riddle.duration));
 
    // state
    const [hint1, setHint1] = useState();   // *TODO*
    const [hint2, setHint2] = useState();  // *TODO*
+
+   // manage hint #1 showing 
+   useEffect(() => {
+      if (!showHint1) return;
+
+      // retrieve hint1 from the backend
+      getHint(riddle.id, 1).then(hint1 => {
+         setHint1(hint1);
+      })
+         .catch(error => {
+            console.log(error);
+            setErrorMessage(`An error occurred loading the hint1 for riddle ${riddle.id}`);
+         });
+      // eslint-disable-next-line
+   }, [showHint1]);
+
+   // manage hint #2 showing 
+   useEffect(() => {
+      if (!showHint2) return;
+
+      // retrieve hint2 from the backend
+      getHint(riddle.id, 2).then(hint2 => {
+         setHint2(hint2);
+      })
+         .catch(error => {
+            console.log(error);
+            setErrorMessage(`An error occurred loading the hint2 for riddle ${riddle.id}`);
+         });
+      // eslint-disable-next-line
+   }, [showHint2]);
 
    return (
       <Row className={`riddle-row my-2 ${repliedCorrectly ? 'correct-reply' : ''} ${repliedWrong ? 'wrong-reply' : ''}`}>
@@ -77,7 +112,7 @@ function RiddleHeader(props) {
          </Col>
          <Col className="col-xxl-1 col-sm-2 adjust">
             {user ?
-               <CircularTimer maxSeconds={duration} className=""
+               <CircularTimer maxSeconds={duration} size={50}
                   remainingSeconds={remainingSeconds} closed={!open} /> :
                <OpenClosePill open={open} />}
          </Col>
@@ -114,7 +149,10 @@ function RiddleBody(props) {
                <NotOwnedRiddleBody riddle={riddle} hint1={hint1} hint2={hint2} sendReply={sendReply} />
             }
          </Col>
-         <Col className="col-xxl-1 col-sm-2 adjust"></Col>
+         <Col className="col-xxl-1 col-sm-2 adjust d-flex align-items-center">
+            <CircularTimer maxSeconds={riddle.duration} size={70}
+               remainingSeconds={riddle.remainingSeconds} closed={!riddle.open} />
+         </Col>
       </Row>
    );
 }
@@ -219,11 +257,11 @@ function NotOwnedRiddleBody(props) {
          else if (difficulty === 'average') points = 2;
          else if (difficulty === 'difficult') points = 3;
 
-         setSuccessMessage(`Congratulations, your reply was correct! You got ${points} points`);
+         setSuccessMessage(`Hooray! Your reply was correct, you got ${points} points! ${String.fromCharCode(0xD83E, 0xDD73)} ${String.fromCharCode(0xD83C, 0xDF89)}`);
          setTimeout(() => setSuccessMessage(""), 5000); // disappear after 3 sec
 
          // - update user's score (add points to previous score)
-         
+
          // TODO: create and call the API to update the user's score
       }
 
@@ -243,10 +281,10 @@ function NotOwnedRiddleBody(props) {
                <Stack direction="horizontal" gap={3}>
                   {userReply ?
                      <> {/* the user has already (not correctly) replied to this riddle */}
-                        <Form.Control className="me-auto" required value={reply} readOnly />
+                        <Form.Control className="me-auto reply-form" required value={reply} readOnly />
                      </> :
                      <> {/* the user hasn't replied to this riddle yet */}
-                        <Form.Control className="me-auto" required disabled={disabled}
+                        <Form.Control className="me-auto reply-form" required disabled={disabled}
                            placeholder="Write your answer here!" value={reply}
                            onChange={(event) => setReply(event.target.value?.trimStart())} />
 
@@ -261,9 +299,9 @@ function NotOwnedRiddleBody(props) {
             {userReply ?
                <div className="wrong-answer-text">
                   {/* the user has already (not correctly) replied to this riddle */}
-                  Ouch... Your answer was wrong!
+                  Ouch... Your answer was wrong! {String.fromCodePoint(0xD83D, 0xDE2C)}
                </div> :
-               <>
+               <div className="hints-wrapper">
                   {/* the user hasn't replied to this riddle yet */}
                   {hint1 &&
                      <div className="hint-wrapper hint1-wrapper">
@@ -275,7 +313,7 @@ function NotOwnedRiddleBody(props) {
                         Hint #2: <span className="hint">{hint2}</span>
                      </div>
                   }
-               </>
+               </div>
             }
          </Stack>
       </>
@@ -285,7 +323,7 @@ function NotOwnedRiddleBody(props) {
 function RiddleReply(props) {
    const { username, reply, life } = props.reply;
    const { winner } = props;
-   
+
    const correct = username === winner;
 
    // context

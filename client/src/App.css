@@ -124,6 +124,10 @@ span.open-close-pill , span.owned-pill {
    font-size: 0.85em;
 }
 
+.reply-form {
+   max-width: 75%;
+}
+
 .correct-answer-wrapper {
    margin: 0 1rem 0.75rem;
    font-style: italic;
@@ -132,23 +136,51 @@ span.open-close-pill , span.owned-pill {
 
 .correct-answer {
    padding-left: 0.3em;
-   font-weight: 500;
+   font-weight: 600;
 }
+
+.hints-wrapper {
+   margin: 0.6rem 0.5rem 0;
+   font-style: italic;
+   color: rgb(67, 67, 67);
+}
+
+.hint-wrapper {
+   margin: 0.2rem;
+}
+
+/* user reply styles */
 
 .user-reply {
    padding-left: 0.3em;
 }
 
+.riddle-row.correct-reply .user-reply {
+   color: green;
+}
+
+.riddle-row.wrong-reply .user-reply {
+   color: red;
+}
+
 .user-reply-wrapper {
-   margin: 0 1rem 0.2rem;
+   margin: 0 1rem;
    font-style: italic;
+   font-size: 0.95em;
+   color: rgb(81, 81, 81);
 }
 
 .wrong-answer-text {
-   margin: 0.5rem 0.5rem 0;
+   padding: 0.15rem 0.75rem;
+   margin: 0.4rem 0.25rem 0;
    font-style: italic;
    font-size: 0.95em;
    color: red;
+   border-radius: 0.5rem;
+   background-color: var(--wrong-row-red);
+   width: fit-content;
+   width: -moz-fit-content;
+   width: -webkit-fit-content;
 }
 
 /* riddle-row-pad styles */

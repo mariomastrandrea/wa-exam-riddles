@@ -45,7 +45,7 @@ function RiddlesNavbar(props) {
          setTimeout(() => setSuccessMessage(""), 3000);  // make success message disappear after 3s
 
          // redirect to home page
-         navigate("/");
+         navigate('/');
       }
       catch (err) {
          setErrorMessage("Something went wrong with your request");
