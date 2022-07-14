@@ -11,7 +11,7 @@ import OwnedPill from "./utilities/OwnedPill";
 
 
 function RiddlesList(props) {
-   const { riddles, sendReply, getHint } = props;
+   const { riddles, sendReply, getHint, getUserScore } = props;
 
    if (!riddles || riddles.length === 0) {
       return <></>;
@@ -21,13 +21,13 @@ function RiddlesList(props) {
       <Container fluid>
          {riddles.map(riddle =>
             <RiddleRow key={`riddle-${riddle.id}-row`} riddle={riddle}
-               sendReply={sendReply} getHint={getHint} />)}
+               sendReply={sendReply} getHint={getHint} getUserScore={getUserScore} />)}
       </Container>
    );
 }
 
 function RiddleRow(props) {
-   const { riddle, sendReply, getHint } = props;
+   const { riddle, sendReply, getHint, getUserScore } = props;
 
    // context
    const user = useUser();
@@ -40,8 +40,8 @@ function RiddleRow(props) {
    const showHint2 = user && !riddle.owned && (riddle.remainingSeconds <= Math.floor(0.25 * riddle.duration));
 
    // state
-   const [hint1, setHint1] = useState();   // *TODO*
-   const [hint2, setHint2] = useState();  // *TODO*
+   const [hint1, setHint1] = useState();   
+   const [hint2, setHint2] = useState();  
 
    // manage hint #1 showing 
    useEffect(() => {
@@ -82,7 +82,8 @@ function RiddleRow(props) {
                </Accordion.Header>
 
                <Accordion.Body>
-                  <RiddleBody riddle={riddle} hint1={hint1} hint2={hint2} sendReply={sendReply} />
+                  <RiddleBody riddle={riddle} hint1={hint1} hint2={hint2} 
+                     sendReply={sendReply} getUserScore={getUserScore} />
                </Accordion.Body>
             </Accordion.Item>
          </Accordion>
@@ -121,7 +122,7 @@ function RiddleHeader(props) {
 }
 
 function RiddleBody(props) {
-   const { riddle, sendReply, hint1, hint2 } = props;
+   const { riddle, sendReply, hint1, hint2, getUserScore } = props;
 
    // context
    const user = useUser();
@@ -146,7 +147,8 @@ function RiddleBody(props) {
          <Col className="riddle-body-wrapper col-xxl-10 col-sm-8 adjust">
             {riddle.owned ?
                <OwnedOrClosedRiddleBody riddle={riddle} /> :
-               <NotOwnedRiddleBody riddle={riddle} hint1={hint1} hint2={hint2} sendReply={sendReply} />
+               <NotOwnedRiddleBody riddle={riddle} hint1={hint1} hint2={hint2} 
+                  sendReply={sendReply} getUserScore={getUserScore} />
             }
          </Col>
          <Col className="col-xxl-1 col-sm-2 adjust d-flex align-items-center">
@@ -211,7 +213,7 @@ function OwnedOrClosedRiddleBody(props) {
 
 function NotOwnedRiddleBody(props) {
    const { id, open, userReply, difficulty } = props.riddle;
-   const { sendReply, hint1, hint2 } = props;
+   const { sendReply, hint1, hint2, getUserScore } = props;
 
    // state
    const [reply, setReply] = useState(userReply ?? "");
@@ -220,6 +222,7 @@ function NotOwnedRiddleBody(props) {
    // context
    const setErrorMessage = useSetErrorMessage();
    const setSuccessMessage = useSetSuccessMessage();
+   const user = useUser();
    const setUser = useSetUser();
 
    // Distinguish between *open* and *closed* riddle:
@@ -260,9 +263,16 @@ function NotOwnedRiddleBody(props) {
          setSuccessMessage(`Hooray! Your reply was correct, you got ${points} points! ${String.fromCharCode(0xD83E, 0xDD73)} ${String.fromCharCode(0xD83C, 0xDF89)}`);
          setTimeout(() => setSuccessMessage(""), 5000); // disappear after 3 sec
 
-         // - update user's score (add points to previous score)
+         // - update user's score calling the API
 
-         // TODO: create and call the API to update the user's score
+         try {
+            const newScore = await getUserScore(user.id);
+            setUser(oldUser => ({...oldUser, score: newScore}));
+         }
+         catch(error) {
+            console.log(error);
+            setErrorMessage("Something went wrong updating your score");
+         }
       }
 
       setDisabled(true); // to disable textfield and buttons until the riddle is re-rendered

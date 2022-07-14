@@ -3,7 +3,8 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import { Container, Row } from 'react-bootstrap'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { storeNewRiddle, login, logout, getCurrentSession, loadRankingList, postNewReply, getHint } from './API';
+import { storeNewRiddle, login, logout, getCurrentSession, 
+   loadRankingList, postNewReply, getHint, getUserScore } from './API';
 import { loadFilters } from './utilities';
 import { UserProvider } from './context/UserContext';
 import { ErrorMessageProvider } from './context/ErrorMessageContext';
@@ -56,26 +57,27 @@ function App() {
                      <Routes>
                         <Route index element={
                            <Home filters={filters} activeFilter={"all"} getCurrentSession={getCurrentSession} 
-                              sendReply={sendReply} getHint={getHint} />
+                              sendReply={sendReply} getHint={getHint} getUserScore={getUserScore} />
                         } />
 
                         <Route path="/:activeFilter" element={
                            <Home filters={filters} getCurrentSession={getCurrentSession} 
-                              sendReply={sendReply} getHint={getHint} />
+                              sendReply={sendReply} getHint={getHint} getUserScore={getUserScore} />
                         } />
 
                         <Route path="/login" element={
                            <LoginPage login={login}
-                              getCurrentSession={getCurrentSession} />
+                              getCurrentSession={getCurrentSession} getUserScore={getUserScore} />
                         } />
 
                         <Route path="/addriddle" element={
                            <AddRiddlePage addRiddle={addRiddle}
-                              getCurrentSession={getCurrentSession} />
+                              getCurrentSession={getCurrentSession} getUserScore={getUserScore} />
                         } />
 
                         <Route path="/ranking" element={
-                           <RankingPage getRankingList={getRankingList} getCurrentSession={getCurrentSession} />
+                           <RankingPage getRankingList={getRankingList} 
+                              getCurrentSession={getCurrentSession} getUserScore={getUserScore} />
                         } />
                      </Routes>
                   </Container>

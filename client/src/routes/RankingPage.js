@@ -7,7 +7,7 @@ import { useSetUser } from "../context/UserContext";
 
 
 function RankingPage(props) {
-   const { getRankingList, getCurrentSession } = props;
+   const { getRankingList, getCurrentSession, getUserScore } = props;
 
    // state
    const [rankingList, setRankingList] = useState([]);
@@ -23,7 +23,14 @@ function RankingPage(props) {
 
       getCurrentSession().then(user => {  // (in order to re-set user's state when the page is refreshed)
          if (user) {
-            setUser(user); // update user's session data
+
+            getUserScore(user.id).then(newScore => {
+               user.score = newScore;
+               setUser(user);   // update user's context data
+            })
+            .catch(error => {
+               setErrorMessage("An error occurred while getting your score");
+            });
          }
          else {
             console.clear(); // in order to clear the '401 unauthorized' error message

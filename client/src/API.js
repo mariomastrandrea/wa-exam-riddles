@@ -25,9 +25,9 @@ async function login(credentials) {
       const user = await response.json();
       return user;
    }
-   catch (err) {
-      console.log(err);
-      throw err;
+   catch (error) {
+      console.log(error);
+      throw error;
    }
 }
 
@@ -45,9 +45,9 @@ async function logout() {
 
       return true;
    }
-   catch (err) {
-      console.log(err);
-      throw err;
+   catch (error) {
+      console.log(error);
+      throw error;
    }
 }
 
@@ -68,9 +68,9 @@ async function getCurrentSession() {
       const user = await response.json();
       return user;
    }
-   catch (err) {
-      console.log(err);
-      throw err;
+   catch (error) {
+      console.log(error);
+      throw error;
    }
 }
 
@@ -101,10 +101,10 @@ async function storeNewRiddle(newRiddle) {
       // new riddle added successfully
       return true;
    }
-   catch (err) {
+   catch (error) {
       // network connection error
-      console.log(err);
-      throw err;
+      console.log(error);
+      throw error;
    }
 }
 
@@ -158,10 +158,10 @@ async function loadRiddlesFilteredBy(filter) {
 
       return filteredRiddles;
    }
-   catch (err) {
+   catch (error) {
       // network connection error
-      console.log(err);
-      throw err;
+      console.log(error);
+      throw error;
    }
 }
 
@@ -181,33 +181,10 @@ async function getHint(riddleId, hintNum) {
       const hintObj = await response.json();
       return hintObj.hint;
    }
-   catch (err) {
+   catch (error) {
       // network connection error
-      console.log(err);
-      throw err;
-   }
-}
-
-async function loadRankingList() {
-   try {
-      const response = await fetch(`${apiUrl}/rankinglist`, {
-         method: 'GET',
-         credentials: 'include'
-      });
-
-      if (!response.ok) {
-         // application error
-         const errDetails = await response.json();
-         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails.error}`);
-      }
-
-      const rankingList = await response.json();
-      return rankingList;
-   }
-   catch (err) {
-      // network connection error
-      console.log(err);
-      throw err;
+      console.log(error);
+      throw error;
    }
 }
 
@@ -231,12 +208,61 @@ async function postNewReply(riddleId, reply) {
       const replyOutcome = await response.json();
       return replyOutcome.correct;  // true or false
    }
-   catch (err) {
+   catch (error) {
       // network connection error
-      console.log(err);
-      throw err;
+      console.log(error);
+      throw error;
    }
 }
+
+/* ranking APIs */
+
+async function loadRankingList() {
+   try {
+      const response = await fetch(`${apiUrl}/rankinglist`, {
+         method: 'GET',
+         credentials: 'include'
+      });
+
+      if (!response.ok) {
+         // application error
+         const errDetails = await response.json();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails.error}`);
+      }
+
+      const rankingList = await response.json();
+      return rankingList;
+   }
+   catch (error) {
+      // network connection error
+      console.log(error);
+      throw error;
+   }
+}
+
+async function getUserScore(userId) {
+   try {
+      const response = await fetch(`${apiUrl}/rankinglist/${userId}`, {
+         method: 'GET',
+         credentials: 'include'
+      });
+
+      if (!response.ok) {
+         // application error
+         const errDetails = await response.json();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails.error}`);
+      }
+
+      const userScore = await response.json();
+      return userScore.score;
+   }
+   catch (error) {
+      // network connection error
+      console.log(error);
+      throw error;
+   }
+}
+
 
 /* auxiliary functions */
 
@@ -244,27 +270,27 @@ async function postNewReply(riddleId, reply) {
 function computeTimePassedFrom(startTimestamp, now) {
    const minutesPassed = now.diff(startTimestamp, 'minute');
 
-   if (minutesPassed === 0) 
+   if (minutesPassed === 0)
       return "now";
 
    const hoursPassed = now.diff(startTimestamp, 'hour');
 
-   if (hoursPassed === 0) 
+   if (hoursPassed === 0)
       return `${minutesPassed} minute${minutesPassed > 1 ? 's' : ''}`;
 
    const daysPassed = now.diff(startTimestamp, 'day');
 
-   if (daysPassed === 0) 
+   if (daysPassed === 0)
       return `${hoursPassed} hour${hoursPassed > 1 ? 's' : ''}`;
 
    const monthsPassed = now.diff(startTimestamp, 'month');
 
-   if (monthsPassed === 0) 
+   if (monthsPassed === 0)
       return `${daysPassed} day${daysPassed > 1 ? 's' : ''}`;
 
    const yearsPassed = now.diff(startTimestamp, 'year');
 
-   if (yearsPassed === 0) 
+   if (yearsPassed === 0)
       return `${monthsPassed} month${monthsPassed > 1 ? 's' : ''}`;
 
    return `${yearsPassed} year${yearsPassed > 1 ? 's' : ''}`;
@@ -277,6 +303,7 @@ export {
    storeNewRiddle,
    loadRiddlesFilteredBy,
    getHint,
+   postNewReply,
    loadRankingList,
-   postNewReply
+   getUserScore
 };

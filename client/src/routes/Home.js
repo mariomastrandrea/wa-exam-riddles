@@ -15,7 +15,7 @@ import { RiddlesList, RiddlePad } from "../components/RiddlesList";
 
 // home page component
 function Home(props) {
-   const { filters, getCurrentSession, sendReply, getHint } = props;
+   const { filters, getCurrentSession, sendReply, getHint, getUserScore } = props;
    const param = useParams();
    const activeFilter = props.activeFilter || param.activeFilter?.toLowerCase();
 
@@ -31,9 +31,16 @@ function Home(props) {
 
    useEffect(() => {
       // check if user is logged in
-      getCurrentSession().then(user => {
-         if (user) {
-            setUser(user); // update user's session data
+      getCurrentSession().then(newUser => {
+         if (newUser) {
+            // get also user's score
+            getUserScore(newUser.id).then(newScore => {
+               newUser.score = newScore;
+               setUser(newUser); // update user's context data
+            })
+            .catch(error => {
+               setErrorMessage("An error occurred while getting your score");
+            });
          }
          else {
             console.clear(); // in order to clear the '401 unauthorized' error message
@@ -73,8 +80,8 @@ function Home(props) {
    }
 
    // check if the specified filter exist, otherwise return a blank page
-   if (!filters.some(filter => filter === revertFromSnakeCase(activeFilter))
-   || (!user && (activeFilter === 'owned' || activeFilter === 'not-owned'))) {
+   if (!filters.some(filter => filter === revertFromSnakeCase(activeFilter)) || 
+      (!user && (activeFilter === 'owned' || activeFilter === 'not-owned'))) {
       return <ErrorBox>{"Error: please specify an existing filter"}</ErrorBox>;
    }
 
@@ -97,7 +104,8 @@ function Home(props) {
                   {!!riddles && riddles.length > 0 && <RiddlePad id="start" />}
                   <Row as="main" className="px-4 overflow-scroll">
                      {/* riddles list component */}
-                     <RiddlesList riddles={riddles} sendReply={sendReply} getHint={getHint} />
+                     <RiddlesList riddles={riddles} sendReply={sendReply} 
+                        getHint={getHint} getUserScore={getUserScore} />
                   </Row>
                   {!!riddles && riddles.length > 0 && <RiddlePad id="end" />}
                </Row>

@@ -8,7 +8,7 @@ import RiddleForm from "../components/RiddleForm";
 
 
 function AddRiddlePage(props) {
-   const { getCurrentSession, addRiddle } = props;
+   const { getCurrentSession, addRiddle, getUserScore } = props;
 
    // context
    const errorMessage = useErrorMessage();
@@ -29,8 +29,13 @@ function AddRiddlePage(props) {
             return;
          }
          
-         setUser(currentUser); // set user context state, in case of page rendering (and state lost)
-         // user is logged in
+         getUserScore(currentUser.id).then(newScore => {
+            currentUser.score = newScore;
+            setUser(currentUser);   // set user context state, in case of page rendering (and state lost)
+         })
+         .catch(error => {
+            setErrorMessage("An error occurred while getting your score");
+         });
       });
       // eslint-disable-next-line
    }, []);

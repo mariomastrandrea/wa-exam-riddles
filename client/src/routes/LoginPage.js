@@ -9,7 +9,7 @@ import LoginForm from '../components/LoginForm';
 
 // login page component
 function LoginPage(props) {
-   const { login, getCurrentSession } = props;
+   const { login, getCurrentSession, getUserScore } = props;
 
    // context
    const errorMessage = useErrorMessage();
@@ -30,9 +30,16 @@ function LoginPage(props) {
             return;
          }
 
-         setUser(currentUser);
-         // user is already authenticated -> redirect to home page
-         navigate("/");
+         getUserScore(currentUser.id).then(newScore => {
+            currentUser.score = newScore;
+            setUser(currentUser);   // update user's context data
+
+            // user is already authenticated -> redirect to home page
+            navigate("/");
+         })
+         .catch(error => {
+            setErrorMessage("An error occurred while getting your score");
+         });
       });
       // eslint-disable-next-line
    }, []);

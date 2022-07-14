@@ -12,7 +12,7 @@ const {
 
 router.get('/sessions/current', getCurrentSession);
 router.get("/rankinglist", getRankingList);
-router.get("rankinglist/:userId", getUserScore);
+router.get("/rankinglist/:userId", getUserScore);
 router.post("/login", login);
 router.delete("/logout", logout);
 

@@ -1,6 +1,12 @@
 const passport = require('passport');
+const Joi = require('joi');
+
 const getUserDaoInstance = require("../dao/UserDao");
 const userDao = getUserDaoInstance();
+
+const {
+   int
+} = require("../utilities")
 
 // GET  /sessions/current
 async function getCurrentSession(req, res) {
@@ -8,23 +14,23 @@ async function getCurrentSession(req, res) {
       return res.status(200).json(req.user);
    }
    else
-      return res.status(401).json({ err: 'Unauthorized' });
+      return res.status(401).json({ error: 'Unauthorized' });
 }
 
 // POST  /login
 async function login(req, res, next) {
-   passport.authenticate('local', (err, user, info) => {
-      if (err)
-         return next(err);
+   passport.authenticate('local', (error, user, info) => {
+      if (error)
+         return next(error);
 
       if (!user) {
          // display wrong login messages
          return res.status(401).send(info);
       }
       // success, perform the login
-      req.login(user, (err) => {
-         if (err)
-            return next(err);
+      req.login(user, (error) => {
+         if (error)
+            return next(error);
 
          // req.user contains the authenticated user, we send all the user info back
          return res.status(201).json(req.user);
@@ -58,8 +64,8 @@ async function getRankingList(req, res) {
 
       return res.status(200).json(top3users);
    }
-   catch (err) {
-      console.log(err);
+   catch (error) {
+      console.log(error);
       return res.status(500).json({ 
          error: "Generic error occurred getting ranking list"
       });
@@ -67,12 +73,42 @@ async function getRankingList(req, res) {
 }
 
 async function getUserScore(req, res) {
-   
+   try {
+      // validate URL parameter
+      let userId = req.params.userId;
+
+      if (Joi.number().integer().required().validate(userId).error) {
+         return res.status(422).json({
+            error: "Invalid userId"
+         });
+      }
+
+      userId = int(userId);
+      const userScore = await userDao.getUserScore(userId);
+
+      if (!userScore && userScore !== 0) {
+         return res.status(404).json({
+            error: `Does not exist a user with id=${userId}`
+         });
+      }
+
+      return res.status(200).json({ 
+         userId,
+         score: userScore 
+      });
+   }
+   catch(error) {
+      console.log(error);
+      return res.status(500).json({ 
+         error: "Generic error occurred getting user score"
+      });
+   }
 }
 
 module.exports = {
    getCurrentSession,
    login,
    logout,
-   getRankingList
+   getRankingList,
+   getUserScore
 };
