@@ -1,4 +1,4 @@
-import { Container, Navbar, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Container, Navbar, Button, OverlayTrigger, Tooltip, Stack } from 'react-bootstrap';
 import { PersonCircle, PatchQuestionFill, Incognito } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import { useSetErrorMessage } from '../context/ErrorMessageContext';
@@ -106,14 +106,18 @@ function RiddlesNavbar(props) {
 
             <Navbar.Brand>
                {user ?
-                  <>
-                     <span className="user-score me-3">{user ? user.score : 0} points</span>
+                  <Stack direction='horizontal'>
+                     <Stack className="user-info me-3" align="center">
+                        <span className="user-username">@{user.username}</span>
+                        <span className="user-score">{user.score ?? 0} point{user.score === 1 ? "" : "s"}</span>
+                     </Stack>
+                     
                      <OverlayTrigger placement="bottom" overlay={
                         <Tooltip>Hi @{user.username}!</Tooltip>
                      }>
-                        <PersonCircle color="white" size="1.6em" className="action-icon" />
+                        <PersonCircle color="white" size="1.7em" className="action-icon" />
                      </OverlayTrigger>
-                  </> :
+                  </Stack> :
                   <Incognito onClick={() => navigate("/login")}
                      color="white" size="1.6em" className="action-icon" />
                }

@@ -11,7 +11,7 @@ import OwnedPill from "./utilities/OwnedPill";
 
 
 function RiddlesList(props) {
-   const { riddles, sendReply, getCurrentSession } = props;
+   const { riddles, sendReply } = props;
 
    if (!riddles || riddles.length === 0) {
       return <></>;
@@ -20,17 +20,26 @@ function RiddlesList(props) {
    return (
       <Container fluid>
          {riddles.map(riddle =>
-            <RiddleRow key={`riddle-${riddle.id}-row`} riddle={riddle} 
-               getCurrentSession={getCurrentSession} sendReply={sendReply} />)}
+            <RiddleRow key={`riddle-${riddle.id}-row`} riddle={riddle} sendReply={sendReply} />)}
       </Container>
    );
 }
 
 function RiddleRow(props) {
-   const { riddle, sendReply, getCurrentSession } = props;
+   const { riddle, sendReply } = props;
+
+   // context
+   const user = useUser();
+
+   const repliedCorrectly = user && riddle.winner === user.username;
+   const repliedWrong     = user && riddle.userReply && riddle.winner !== user.username;
+
+   // state
+   const [hint1, setHint1] = useState();   // *TODO*
+   const [hint2, setHint2] = useState();  // *TODO*
 
    return (
-      <Row className="riddle-row my-2">
+      <Row className={`riddle-row my-2 ${repliedCorrectly ? 'correct-reply' : ''} ${repliedWrong ? 'wrong-reply' : ''}`}>
          <Accordion>
             <Accordion.Item eventKey={`riddle-${riddle.id}`}>
                <Accordion.Header>
@@ -38,7 +47,7 @@ function RiddleRow(props) {
                </Accordion.Header>
 
                <Accordion.Body>
-                  <RiddleBody riddle={riddle} sendReply={sendReply} getCurrentSession={getCurrentSession} />
+                  <RiddleBody riddle={riddle} hint1={hint1} hint2={hint2} sendReply={sendReply} />
                </Accordion.Body>
             </Accordion.Item>
          </Accordion>
@@ -77,7 +86,7 @@ function RiddleHeader(props) {
 }
 
 function RiddleBody(props) {
-   const { riddle, sendReply, getCurrentSession } = props;
+   const { riddle, sendReply, hint1, hint2 } = props;
 
    // context
    const user = useUser();
@@ -102,8 +111,7 @@ function RiddleBody(props) {
          <Col className="riddle-body-wrapper col-xxl-10 col-sm-8 adjust">
             {riddle.owned ?
                <OwnedOrClosedRiddleBody riddle={riddle} /> :
-               <NotOwnedRiddleBody riddle={riddle} 
-                  getCurrentSession={getCurrentSession} sendReply={sendReply} />
+               <NotOwnedRiddleBody riddle={riddle} hint1={hint1} hint2={hint2} sendReply={sendReply} />
             }
          </Col>
          <Col className="col-xxl-1 col-sm-2 adjust"></Col>
@@ -132,28 +140,32 @@ function OwnedOrClosedRiddleBody(props) {
 
    return (
       <>
-         <Stack gap={1} className="mb-3">
+         <Stack gap={1} className="my-1">
             {replies.length === 0 ?
                <span className="no-replies-message">No one has yet answered this riddle</span> :  // can happen only for an open riddle
                replies.map(reply =>
                   <RiddleReply key={`${reply.username}-riddle-${id}-reply`} reply={reply} winner={winner} />)
             }
          </Stack>
-         {userReply &&
-            <div className="user-reply-wrapper">
-               Your answer was:
-               <span key="user-reply" className="user-reply">
-                  "{capitalize(userReply)}"
-               </span>
-            </div>
-         }
-         {!open &&
-            <div className="correct-answer-wrapper">
-               The correct answer was:
-               <span key="correct-answer" className="correct-answer">
-                  "{capitalize(answer)}"
-               </span>
-            </div>
+         {(userReply || !open) &&
+            <Stack className="mt-3">
+               {userReply &&
+                  <div className="user-reply-wrapper">
+                     Your answer was:
+                     <span key="user-reply" className="user-reply">
+                        "{userReply}"
+                     </span>
+                  </div>
+               }
+               {!open &&
+                  <div className="correct-answer-wrapper">
+                     The correct answer was:
+                     <span key="correct-answer" className="correct-answer">
+                        "{capitalize(answer)}"
+                     </span>
+                  </div>
+               }
+            </Stack>
          }
       </>
    );
@@ -161,7 +173,7 @@ function OwnedOrClosedRiddleBody(props) {
 
 function NotOwnedRiddleBody(props) {
    const { id, open, userReply, difficulty } = props.riddle;
-   const { getCurrentSession, sendReply, hint1, hint2 } = props;
+   const { sendReply, hint1, hint2 } = props;
 
    // state
    const [reply, setReply] = useState(userReply ?? "");
@@ -193,7 +205,7 @@ function NotOwnedRiddleBody(props) {
       }
       catch (error) {
          console.log(error);
-         setErrorMessage("Something went wrong sending your reply");
+         setErrorMessage("Something went wrong sending your reply. Please try again");
          return;
       }
 
@@ -208,19 +220,19 @@ function NotOwnedRiddleBody(props) {
          else if (difficulty === 'difficult') points = 3;
 
          setSuccessMessage(`Congratulations, your reply was correct! You got ${points} points`);
-         setTimeout(() => setSuccessMessage(""), 3000); // disappear after 3 sec
+         setTimeout(() => setSuccessMessage(""), 5000); // disappear after 3 sec
 
-         // - update user's score 
-         getCurrentSession().then(user => {
-            setUser(user);
-         })
-         .catch(err => {
-            setErrorMessage("An error occurred while getting your current session");
-         });
-
+         // - update user's score (add points to previous score)
+         
+         // TODO: create and call the API to update the user's score
       }
-      
+
       setDisabled(true); // to disable textfield and buttons until the riddle is re-rendered
+   }
+
+   function handleReset() {
+      setReply("");
+      setErrorMessage("");
    }
 
    // *open* and *not owned* riddle
@@ -230,27 +242,40 @@ function NotOwnedRiddleBody(props) {
             <Form onSubmit={handleReplySubmit}>
                <Stack direction="horizontal" gap={3}>
                   {userReply ?
-                     <>
-                        <Form.Control className="me-auto" required value={reply} />
-                        <Button disabled variant="secondary">Submit</Button>
+                     <> {/* the user has already (not correctly) replied to this riddle */}
+                        <Form.Control className="me-auto" required value={reply} readOnly />
                      </> :
-                     <>
+                     <> {/* the user hasn't replied to this riddle yet */}
                         <Form.Control className="me-auto" required disabled={disabled}
-                           placeholder="Write your answer here!" value={reply} 
+                           placeholder="Write your answer here!" value={reply}
                            onChange={(event) => setReply(event.target.value?.trimStart())} />
 
                         <Button type="submit" disabled={disabled} variant="secondary">Submit</Button>
                         <div className="vr" />
-                        <Button variant="outline-danger" disabled={disabled} onClick={() => setReply("")}>Reset</Button>
+                        <Button variant="outline-danger" disabled={disabled} onClick={handleReset}>Reset</Button>
                      </>
                   }
 
                </Stack>
             </Form>
-            {userReply &&
+            {userReply ?
                <div className="wrong-answer-text">
+                  {/* the user has already (not correctly) replied to this riddle */}
                   Ouch... Your answer was wrong!
-               </div>
+               </div> :
+               <>
+                  {/* the user hasn't replied to this riddle yet */}
+                  {hint1 &&
+                     <div className="hint-wrapper hint1-wrapper">
+                        Hint #1: <span className="hint">{hint1}</span>
+                     </div>
+                  }
+                  {hint2 &&
+                     <div className="hint-wrapper hint2-wrapper">
+                        Hint #2: <span className="hint">{hint2}</span>
+                     </div>
+                  }
+               </>
             }
          </Stack>
       </>
@@ -260,6 +285,7 @@ function NotOwnedRiddleBody(props) {
 function RiddleReply(props) {
    const { username, reply, life } = props.reply;
    const { winner } = props;
+   
    const correct = username === winner;
 
    // context

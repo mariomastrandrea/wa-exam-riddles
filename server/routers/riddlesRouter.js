@@ -3,7 +3,8 @@ const router = express.Router();
 
 const { 
    getRiddlesByFilter,
-   createRiddle
+   createRiddle,
+   createReply
 } = require("../controllers/riddlesController");
 
 
@@ -17,6 +18,7 @@ const isLoggedIn = (req, res, next) => {
 
 router.get("/filter/:filter", getRiddlesByFilter);
 router.post("/", isLoggedIn, createRiddle);
+router.post("/replies", isLoggedIn, createReply);
 
 
 module.exports = router;

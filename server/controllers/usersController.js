@@ -4,8 +4,9 @@ const userDao = getUserDaoInstance();
 
 // GET  /sessions/current
 async function getCurrentSession(req, res) {
-   if (req.isAuthenticated())
+   if (req.isAuthenticated()) {
       return res.status(200).json(req.user);
+   }
    else
       return res.status(401).json({ err: 'Unauthorized' });
 }

@@ -13,6 +13,11 @@ const NO_CONTENT = () => ({
    code: 204
 });
 
+const BAD_REQUEST = (message) => ({
+   error: `Bad request${message ? ` - ${message}` : " error"}`,
+   code: 400
+});
+
 const UNAUTHORIZED = (message) => ({
    error: `Unauthorized${message ? ` - ${message}` : " error"}`,
    code: 401
@@ -47,6 +52,7 @@ module.exports = {
    OK,
    CREATED,
    NO_CONTENT,
+   BAD_REQUEST,
    UNAUTHORIZED,
    NOT_FOUND,
    CONFLICT,

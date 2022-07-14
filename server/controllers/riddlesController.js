@@ -36,8 +36,8 @@ async function getRiddlesByFilter(req, res) {
 
       return res.status(code).json(obj);
    }
-   catch (err) {
-      console.log(err);
+   catch (error) {
+      console.log(error);
       return res.status(500).json({
          error: "Generic error occurred during riddles loading"
       });
@@ -83,17 +83,54 @@ async function createRiddle(req, res) {
       // * riddle was successfully created *
       return res.status(code).end();
    }
-   catch (err) {
-      console.log(err);
+   catch (error) {
+      console.log(error);
       return res.status(500).json({
-         error: "Generic error occurred during riddle creation"
+         error: "A generic error occurred during riddle creation"
       });
    }
 }
 
+// POST /riddles/replies
+// request body: a json containing 'riddleId'(number) and 'reply'(string)
+async function createReply(req, res) {
+   try {
+      // validate request body
+      const schema = Joi.object({
+         riddleId: Joi.number().integer().required(),
+         reply: Joi.string().required()
+      });
 
+      const validationResult = schema.validate(req.body);
+
+      if (validationResult.error) {
+         return res.status(422).json({
+            error: "Unprocessable reply entity"
+         });
+      }
+
+      const { riddleId, reply } = req.body;
+      const userId = req.user.id;      
+
+      const { error, code, obj } = await riddleService.storeReply(riddleId, userId, reply);
+
+      if (error) {
+         return res.status(code).json({ error });
+      }
+
+      // * reply was successfully created *
+      return res.status(code).json(obj);
+   }
+   catch (error) {
+      console.log(error);
+      return res.status(500).json({
+         error: "A generic error occurred during reply creation"
+      });
+   }
+}
 
 module.exports = {
    getRiddlesByFilter,
-   createRiddle
+   createRiddle,
+   createReply
 }

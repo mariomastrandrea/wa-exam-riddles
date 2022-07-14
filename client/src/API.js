@@ -61,8 +61,8 @@ async function getCurrentSession() {
          return null;   // no current session
 
       if (!response.ok) {
-         const errDetails = await response.text();
-         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
+         const errDetails = await response.json();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails.error}`);
       }
 
       const user = await response.json();
@@ -94,8 +94,8 @@ async function storeNewRiddle(newRiddle) {
 
       if (!response.ok) {
          // application error
-         const errDetails = await response.text();
-         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
+         const errDetails = await response.json();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails.error}`);
       }
 
       // new riddle added successfully
@@ -117,8 +117,8 @@ async function loadRiddlesFilteredBy(filter) {
 
       if (!response.ok) {
          // application error
-         const errDetails = await response.text();
-         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
+         const errDetails = await response.json();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails.error}`);
       }
 
       const filteredRiddles = await response.json();
@@ -174,8 +174,8 @@ async function loadRankingList() {
 
       if (!response.ok) {
          // application error
-         const errDetails = await response.text();
-         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
+         const errDetails = await response.json();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails.error}`);
       }
 
       const rankingList = await response.json();
@@ -201,8 +201,8 @@ async function postNewReply(riddleId, reply) {
 
       if (!response.ok) {
          // application error
-         const errDetails = await response.text();
-         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails}`);
+         const errDetails = await response.json();
+         throw new TypeError(`${response.statusText}${errDetails ? " - " : ""}${errDetails.error}`);
       }
 
       const replyOutcome = await response.json();

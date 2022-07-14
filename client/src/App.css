@@ -3,6 +3,10 @@
    --login-form-color: rgb(231, 240, 234);
    --riddle-form-color: #fecf95;
    --navbar-height: 4rem;
+   --correct-green: rgb(220, 248, 230);
+   --wrong-red: rgb(254, 242, 242);
+   --correct-row-green: rgb(220, 251, 236);
+   --wrong-row-red: rgb(251, 236, 236);
 }
 
 html {
@@ -42,6 +46,14 @@ html {
 
 .riddle-row .accordion-button {
    min-height: 4.95rem;
+}
+
+.riddle-row.correct-reply .accordion-button {
+   background-color: var(--correct-row-green);
+}
+
+.riddle-row.wrong-reply .accordion-button {
+   background-color: var(--wrong-row-red);
 }
 
 span.riddle-owner {
@@ -98,11 +110,11 @@ span.open-close-pill , span.owned-pill {
 }
 
 .riddle-reply-wrapper.wrong {
-   background-color: rgb(254, 242, 242);
+   background-color: var(--wrong-red);
 }
 
 .riddle-reply-wrapper.correct {
-   background-color: rgb(220, 248, 230);
+   background-color: var(--correct-green);
    font-weight: 500;
    font-size: 1.1em;
 }
@@ -130,6 +142,13 @@ span.open-close-pill , span.owned-pill {
 .user-reply-wrapper {
    margin: 0 1rem 0.2rem;
    font-style: italic;
+}
+
+.wrong-answer-text {
+   margin: 0.5rem 0.5rem 0;
+   font-style: italic;
+   font-size: 0.95em;
+   color: red;
 }
 
 /* riddle-row-pad styles */
@@ -179,10 +198,22 @@ span.open-close-pill , span.owned-pill {
    width: 5.5rem;
 }
 
-.riddles-navbar span.user-score {
-   font-size: 1rem;
+.riddles-navbar .user-info {
+   font-size: 0.9rem;
    font-weight: 600;
+   line-height: 1.15em;
+}
+
+.riddles-navbar .user-score {
    color:rgb(255, 226, 6);
+}
+
+.riddles-navbar .user-username {
+   font-size: 0.9em;
+}
+
+.riddles-navbar .navbar-brand svg {
+   padding: 0.1rem
 }
 
 /* sidebar styles */

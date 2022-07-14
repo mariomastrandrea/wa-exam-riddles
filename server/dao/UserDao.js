@@ -24,8 +24,8 @@ class UserDao {
       return new Promise((resolve, reject) => {
          const sqlQuery = `SELECT U.id AS id, U.username AS username, 
                                   U.salt AS salt, U.hash AS hash, R.score AS score  
-                           FROM User U, Rank R
-                           WHERE username=? AND U.id=R.userId`;
+                           FROM   User U, Rank R
+                           WHERE  U.username=? AND U.id=R.userId`;
 
          this.#db.get(sqlQuery, [username], (err, row) => {
             if (err) {

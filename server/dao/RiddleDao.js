@@ -20,6 +20,26 @@ class RiddleDao {
       this.#db.close();
    }
 
+   /* Riddles */
+
+   getRiddleById(riddleId) {
+      return new Promise((resolve, reject) => {
+         const sqlQuery = `SELECT *
+                           FROM   Riddle
+                           WHERE  id=?`;
+
+         this.#db.get(sqlQuery, [riddleId], (err, row) => {
+            if (err)
+               reject(err);
+            else if (!row)
+               resolve(null);
+            else
+               resolve(new Riddle(row.id, row.question, row.answer, row.difficulty, row.duration,
+                   row.hint1, row.hint2, row.ownerId, row.deadline, row.ownerUsername, row.birth));
+         });
+      });
+   }
+
    getRiddleByQuestion(question) {
       return new Promise((resolve, reject) => {
          const sqlQuery = `SELECT *
@@ -32,8 +52,8 @@ class RiddleDao {
             else if (!row)
                resolve(null);
             else
-               resolve(new Riddle(row.id, row.question, row.answer, row.difficulty,
-                  row.duration, row.hint1, row.hint2, row.ownerId, row.deadline));
+               resolve(new Riddle(row.id, row.question, row.answer, row.difficulty, row.duration,
+                  row.hint1, row.hint2, row.ownerId, row.deadline, row.ownerUsername, row.birth));
          });
       });
    }
@@ -41,8 +61,8 @@ class RiddleDao {
    // get all riddles, each with id, question, difficulty and deadline, in descending order
    getAllSimpleRiddles() {
       return new Promise((resolve, reject) => {
-         const sqlQuery = `SELECT id, question, difficulty, deadline
-                           FROM   Riddle
+         const sqlQuery = `SELECT   id, question, difficulty, deadline
+                           FROM     Riddle
                            ORDER BY id DESC`;
 
          this.#db.all(sqlQuery, (err, rows) => {
@@ -62,8 +82,8 @@ class RiddleDao {
    // get all riddles, each with id, question, difficulty, deadline, duration, answer, ownerId, ownerUsername and birth
    getAllRiddles() {
       return new Promise((resolve, reject) => {
-         const sqlQuery = `SELECT id, question, difficulty, deadline, duration, answer, ownerId, ownerUsername, birth
-                           FROM   Riddle
+         const sqlQuery = `SELECT   id, question, difficulty, deadline, duration, answer, ownerId, ownerUsername, birth
+                           FROM     Riddle
                            ORDER BY id DESC`;
 
          this.#db.all(sqlQuery, (err, rows) => {
@@ -85,16 +105,17 @@ class RiddleDao {
       });
    }
 
+   // stores a new riddle object in the db and return it with the new assigned id
    store(newRiddle) {
       const newQuestion = newRiddle.question.trim();
       const newAnswer = newRiddle.answer.trim().toLowerCase();
       const newDifficulty = newRiddle.difficulty;
-      const newDuration = newRiddle.duration;
+      const newDuration = newRiddle.duration;   // seconds
       const newHint1 = newRiddle.hint1.trim();
       const newHint2 = newRiddle.hint2.trim();
       const newOwnerId = newRiddle.ownerId;
       const newOwnerUsername = newRiddle.ownerUsername;
-      const newBirth = newRiddle.birth;
+      const newBirth = newRiddle.birth;   // timestamp ISO String
 
       return new Promise((resolve, reject) => {
          const sqlStatement =
@@ -115,6 +136,26 @@ class RiddleDao {
          });
       });
    }
+
+   // changes a riddle's deadline
+   setDeadlineTo(riddleId, newDeadline) {
+      return new Promise((resolve, reject) => {
+         const sqlStatement = `UPDATE Riddle
+                               SET deadline=?
+                               WHERE id=?`;
+         
+         const params = [newDeadline, riddleId];
+
+         this.#db.run(sqlStatement, params, function (err) {
+            if (err)
+               reject(err);
+            else
+               resolve(this.changes > 0);
+         });
+      });
+   }
+
+   /* Replies */
 
    // replies are chronologically ordered; each one contains (username, reply, timestamp)
    getAllRepliesTo(riddleId) {
@@ -196,6 +237,45 @@ class RiddleDao {
                resolve(null);
             else
                resolve(row.reply);
+         });
+      });
+   }
+
+   // stores a new reply object in the db and returns it
+   storeReply(newReply) {
+      const { riddleId, userId, reply, correct, timestamp } = newReply;
+      const params = [riddleId, userId, reply, correct, timestamp];
+
+      return new Promise((resolve, reject) => {
+         const sqlStatement = `INSERT INTO RiddleReply (riddleId, userId, reply, correct, timestamp)
+                               VALUES (?, ?, ?, ?, ?)`;
+
+         this.#db.run(sqlStatement, params, function (err) {
+            if (err) 
+               reject(err);
+            else if (this.changes === 0)
+               resolve(null);
+            else 
+               resolve({ ...newReply });
+         });
+      });
+   }
+
+   /* users' scores */
+
+   addUserScore(userId, pointsToAdd) {
+      return new Promise((resolve, reject) => {
+         const sqlStatement = `UPDATE Rank
+                               SET score=score+?
+                               WHERE userId=?`;
+         
+         const params = [pointsToAdd, userId];
+
+         this.#db.run(sqlStatement, params, function (err) {
+            if (err)
+               reject(err);
+            else
+               resolve(this.changes === 1); 
          });
       });
    }

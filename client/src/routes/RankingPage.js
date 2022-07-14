@@ -3,10 +3,11 @@ import { Row, Col } from "react-bootstrap";
 import { useErrorMessage, useSetErrorMessage } from "../context/ErrorMessageContext";
 import ErrorBox from "../components/utilities/ErrorBox";
 import RankingTable from "../components/RankingTable";
+import { useSetUser } from "../context/UserContext";
 
 
 function RankingPage(props) {
-   const { getRankingList } = props;
+   const { getRankingList, getCurrentSession } = props;
 
    // state
    const [rankingList, setRankingList] = useState([]);
@@ -15,9 +16,22 @@ function RankingPage(props) {
    // context
    const errorMessage = useErrorMessage();
    const setErrorMessage = useSetErrorMessage();
+   const setUser = useSetUser();
 
    useEffect(() => {
       setErrorMessage("");
+
+      getCurrentSession().then(user => {  // (in order to re-set user's state when the page is refreshed)
+         if (user) {
+            setUser(user); // update user's session data
+         }
+         else {
+            console.clear(); // in order to clear the '401 unauthorized' error message
+         }
+      })
+      .catch(err => {
+         setErrorMessage("An error occurred while getting your current session");
+      });
 
       getRankingList().then(rankingList => {
          setRankingList(rankingList);

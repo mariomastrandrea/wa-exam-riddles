@@ -75,7 +75,7 @@ function App() {
                         } />
 
                         <Route path="/ranking" element={
-                           <RankingPage getRankingList={getRankingList} />
+                           <RankingPage getRankingList={getRankingList} getCurrentSession={getCurrentSession} />
                         } />
                      </Routes>
                   </Container>

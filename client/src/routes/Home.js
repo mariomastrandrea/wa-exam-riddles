@@ -53,6 +53,7 @@ function Home(props) {
 
       // * start the timer to retrieve riddles from backend every 1 sec *
       const timerId = setInterval(() => {
+         return;
          loadRiddlesFilteredBy(activeFilter).then(riddles => {
             setRiddles(riddles);
          })
@@ -95,7 +96,7 @@ function Home(props) {
                   {!!riddles && riddles.length > 0 && <RiddlePad id="start" />}
                   <Row as="main" className="px-4 overflow-scroll">
                      {/* riddles list component */}
-                     <RiddlesList riddles={riddles} getCurrentSession={getCurrentSession} sendReply={sendReply} />
+                     <RiddlesList riddles={riddles} sendReply={sendReply} />
                   </Row>
                   {!!riddles && riddles.length > 0 && <RiddlePad id="end" />}
                </Row>
